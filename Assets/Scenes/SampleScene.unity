@@ -271,7 +271,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   target: {fileID: 584693036}
   offset: {x: 0, y: 0, z: -10}
-  lerpSpeed: 12
+  lerpSpeed: 10
 --- !u!1 &584693036
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,6 +285,7 @@ GameObject:
   - component: {fileID: 584693039}
   - component: {fileID: 584693041}
   - component: {fileID: 584693040}
+  - component: {fileID: 584693042}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -378,6 +379,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cba2cbffb6fecd45a14963102962f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  anim: {fileID: 0}
+  rb: {fileID: 0}
+  bc: {fileID: 0}
+  moveSpeed: 5
   moveDir: {x: 0, y: 0}
 --- !u!61 &584693040
 BoxCollider2D:
@@ -452,6 +457,28 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!95 &584693042
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584693036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0477b3f752e186c40997c9a72d291649, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
