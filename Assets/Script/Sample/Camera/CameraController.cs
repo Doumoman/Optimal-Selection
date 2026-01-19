@@ -4,7 +4,7 @@ public class CameraController : MonoBehaviour
 {
     public GameObject target;
     public Vector3 offset = new Vector3(0, 0, -10);
-    public float lerpSpeed = 12f;
+    public float lerpSpeed = 10f;
 
     private Transform targetTransform;
 
@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
         if (target == null) return;
 
         Vector3 targetPos = targetTransform.position + offset;
-        Vector3 lerpPos = Vector3.Lerp(transform.position, targetPos, lerpSpeed);
+        Vector3 lerpPos = Vector3.Lerp(transform.position, targetPos, lerpSpeed * Time.deltaTime);
         transform.position = lerpPos;
     }
 }
