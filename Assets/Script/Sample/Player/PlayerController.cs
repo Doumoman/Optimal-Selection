@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
-
 public class PlayerController : MonoBehaviour
 {
     [Header("Player States")]
     public PlayerBaseState idleState;
     public PlayerBaseState sneakState;
+    public PlayerBaseState sneakMoveState;
     public PlayerBaseState walkState;
     public PlayerBaseState specialState;
 
-    [SerializeField]
     private PlayerBaseState currentState;
 
     [Header("References")]
@@ -26,6 +25,7 @@ public class PlayerController : MonoBehaviour
     {
         idleState = new IdleState(this);
         sneakState = new SneakState(this);
+        sneakMoveState = new SneakMoveState(this);
         walkState = new WalkState(this);
         specialState = new SpecialState(this);
 
@@ -44,12 +44,12 @@ public class PlayerController : MonoBehaviour
         float v = Input.GetAxisRaw("Vertical");
         moveDir = new Vector2(h, v).normalized; // 방향벡터 정규화
 
-        if(moveDir.x != 0)
+        if (moveDir != Vector2.zero)
         {
             lastDir = moveDir;
             Vector2 currentScale = transform.localScale;
 
-            if(moveDir.x > 0)
+            if (moveDir.x > 0)
             {
                 currentScale.x = Mathf.Abs(currentScale.x);
             }
@@ -60,27 +60,37 @@ public class PlayerController : MonoBehaviour
 
             transform.localScale = currentScale;
         }
-
         currentState?.Update();
     }
+
     public void ChangeState(PlayerBaseState newState)
     {
         currentState?.Exit(); // 기존 상태 벗어남
         currentState = newState; // 상태 변경
         newState?.Enter(); // 새로운 상태 진입
     }
+
+    public int GetDirectionIndex()
+    {
+        if (lastDir.y > 0) return 0; // Back
+        else if (lastDir.y < 0) return 1; // Front
+        else return 2; // Side
+    }
 }
 
+#region 플레이어 상태 로직
 public class IdleState : PlayerBaseState
 {
     public IdleState(PlayerController pc) : base(pc) { }
+
     public override void Enter()
     {
-        
+
     }
+
     public override void Update()
     {
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             playerContext.ChangeState(playerContext.sneakState);
             return;
@@ -91,7 +101,9 @@ public class IdleState : PlayerBaseState
             playerContext.ChangeState(playerContext.walkState);
             return;
         }
+        PlayAnimation(this);
     }
+
     public override void Exit()
     {
         
@@ -101,20 +113,59 @@ public class IdleState : PlayerBaseState
 public class SneakState : PlayerBaseState
 {
     public SneakState(PlayerController pc) : base(pc) { }
+
     public override void Enter()
     {
-        playerContext.anim.SetBool("Sneak", true);
+
     }
+
     public override void Update()
     {
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             playerContext.ChangeState(playerContext.idleState);
             return;
         }
 
-        playerContext.anim.SetFloat("MoveX", playerContext.lastDir.x);
-        playerContext.anim.SetFloat("MoveY", playerContext.lastDir.y);
+        if(playerContext.moveDir != Vector2.zero)
+        {
+            playerContext.ChangeState(playerContext.sneakMoveState);
+            return;
+        }
+
+        PlayAnimation(this);
+    }
+
+    public override void Exit()
+    {
+
+    }
+}
+
+public class SneakMoveState : PlayerBaseState
+{
+    public SneakMoveState(PlayerController pc) : base(pc) { }
+
+    public override void Enter()
+    {
+
+    }
+
+    public override void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            playerContext.ChangeState(playerContext.walkState);
+            return;
+        }
+
+        if (playerContext.moveDir == Vector2.zero)
+        {
+            playerContext.ChangeState(playerContext.sneakState);
+            return;
+        }
+
+        PlayAnimation(this);
 
         float sneakSpeed = playerContext.moveSpeed / 2.0f;
         playerContext.transform.Translate(playerContext.moveDir * sneakSpeed * Time.deltaTime);
@@ -122,17 +173,19 @@ public class SneakState : PlayerBaseState
 
     public override void Exit()
     {
-        playerContext.anim.SetBool("Sneak", false);
+
     }
 }
 
 public class WalkState : PlayerBaseState
 {
     public WalkState(PlayerController pc) : base(pc) { }
+
     public override void Enter()
     {
-        playerContext.anim.SetBool("isWalk", true);
+        
     }
+
     public override void Update()
     {
         if (playerContext.moveDir == Vector2.zero)
@@ -141,26 +194,27 @@ public class WalkState : PlayerBaseState
             return;
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            playerContext.ChangeState(playerContext.sneakState);
+            playerContext.ChangeState(playerContext.sneakMoveState);
             return;
         }
 
-        playerContext.anim.SetFloat("MoveX", playerContext.lastDir.x);
-        playerContext.anim.SetFloat("MoveY", playerContext.lastDir.y);
+        PlayAnimation(this);
 
         playerContext.transform.Translate(playerContext.moveDir * playerContext.moveSpeed * Time.deltaTime);
     }
+
     public override void Exit()
     {
-        playerContext.anim.SetBool("isWalk", false);
+
     }
 }
 
 public class SpecialState : PlayerBaseState
 {
     public SpecialState(PlayerController pc) : base(pc) { }
+
     public override void Enter()
     {
 
@@ -169,8 +223,10 @@ public class SpecialState : PlayerBaseState
     {
 
     }
+
     public override void Exit()
     {
 
     }
 }
+#endregion
