@@ -7,9 +7,9 @@ using TMPro;
 public class TestDialogue : MonoBehaviour
 {
     [Header("UI Component")]
-    public Image portraitImage;      
-    public TextMeshProUGUI nameText; 
-    public TextMeshProUGUI dialogueText; 
+    public Image portraitImage;
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI dialogueText;
     public Button nextButton;
 
     [Header("CSV File Name")]
@@ -41,6 +41,9 @@ public class TestDialogue : MonoBehaviour
         nameText.text = row[TestDialogueConfig.COL_SPEAKER].ToString();
         dialogueText.text = row[TestDialogueConfig.COL_DIALOGUE].ToString();
 
+        StopAllCoroutines();
+        StartCoroutine(TypingEffect(dialogueText));
+
         string portraitName = row[TestDialogueConfig.COL_PORTRAIT].ToString();
 
         // Resources.Load로 이미지 불러오기
@@ -60,5 +63,19 @@ public class TestDialogue : MonoBehaviour
 
         // 다음 줄로 넘어가기 위해 인덱스 증가
         currentLineIndex++;
+    }
+
+    IEnumerator TypingEffect(TextMeshProUGUI textComp)
+    {
+        textComp.ForceMeshUpdate();
+        int totalVisibleCharacters = textComp.textInfo.characterCount; // 전체 글자 수
+        int counter = 0;
+
+        while (counter <= totalVisibleCharacters)
+        {
+            textComp.maxVisibleCharacters = counter; // 보여줄 글자 수 조절
+            counter++;
+            yield return new WaitForSeconds(0.05f); // 타자 속도 (조절 가능)
+        }
     }
 }
