@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 moveDir;
     public Vector2 lastDir;
 
+    public bool isInputBlocked; // 플레이어 입력을 막을 것인지 체크
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
