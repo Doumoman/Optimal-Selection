@@ -39,10 +39,10 @@ public class TestDialogue : MonoBehaviour
         Dictionary<string, object> row = dialogueData[currentLineIndex];
 
         nameText.text = row[TestDialogueConfig.COL_SPEAKER].ToString();
-        dialogueText.text = row[TestDialogueConfig.COL_DIALOGUE].ToString();
 
+        dialogueText.text = row[TestDialogueConfig.COL_DIALOGUE].ToString();
         StopAllCoroutines();
-        StartCoroutine(TypingEffect(dialogueText));
+        StartCoroutine(TypingEffect(dialogueText, 0.05f));
 
         string portraitName = row[TestDialogueConfig.COL_PORTRAIT].ToString();
 
@@ -65,7 +65,7 @@ public class TestDialogue : MonoBehaviour
         currentLineIndex++;
     }
 
-    IEnumerator TypingEffect(TextMeshProUGUI textComp)
+    IEnumerator TypingEffect(TextMeshProUGUI textComp, float speed)
     {
         textComp.ForceMeshUpdate();
         int totalVisibleCharacters = textComp.textInfo.characterCount; // 전체 글자 수
@@ -75,7 +75,7 @@ public class TestDialogue : MonoBehaviour
         {
             textComp.maxVisibleCharacters = counter; // 보여줄 글자 수 조절
             counter++;
-            yield return new WaitForSeconds(0.05f); // 타자 속도 (조절 가능)
+            yield return new WaitForSeconds(speed); // 타자 속도 대체로 0.05f? 정도 쓰는듯
         }
     }
 }
