@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : Singleton<InputManager>
+public class InputManager : Singleton<InputManager>, IManager
 {
     private GameControls _controls;
 
@@ -10,14 +10,21 @@ public class InputManager : Singleton<InputManager>
 
     public Vector2 MoveDirection => _controls?.Player.Move.ReadValue<Vector2>() ?? Vector2.zero;
 
-    protected override void Awake()
+    private bool _init = false;
+    public void Init()
     {
-        base.Awake();
+        if(_init) return;
+        _init = true;
 
         _controls = new GameControls();
 
         // 이벤트 바인딩, 여기에 이벤트 추가
         _controls.Player.Menu.performed += OnMenuPerformed;
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
     }
 
     private void OnEnable()

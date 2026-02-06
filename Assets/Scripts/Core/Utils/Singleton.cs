@@ -4,6 +4,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance;
     private static bool _isShuttingDown = false;
+    private static bool _init = false;
 
     public static T Instance
     {
@@ -52,4 +53,5 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         _isShuttingDown = true;
     }
+
 }
