@@ -4,13 +4,11 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance;
     private static bool _isShuttingDown = false;
-    private static bool _init = false;
-
     public static T Instance
     {
         get
         {
-            if (_isShuttingDown)
+            if (_isShuttingDown) // 이미 파괴된 싱글톤
             {
                 Debug.LogWarning($"[Singleton] Instance '{typeof(T)}' already destroyed. Returning null.");
                 return null;
@@ -53,5 +51,4 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         _isShuttingDown = true;
     }
-
 }

@@ -4,16 +4,17 @@ using UnityEngine;
 public class ResourceManager : IManager
 {
     private bool _init = false;
+
+    // 캐싱
+    private Dictionary<string, Object> _resources = new Dictionary<string, Object>();
+
     public void Init()
     {
-        if(_init) return;
+        if (_init) return;
         _init = true;
 
         // 초기화 로직
     }
-
-    // 캐싱
-    private Dictionary<string, Object> _resources = new Dictionary<string, Object>();
 
     public T Load<T>(string path) where T : Object
     {
@@ -58,6 +59,7 @@ public class ResourceManager : IManager
         return go;
     }
 
+    // 특정 게임오브젝트를 파괴
     public void Destroy(GameObject go)
     {
         if (go == null) return;
@@ -66,6 +68,13 @@ public class ResourceManager : IManager
     }
 
     public void Clear()
+    {
+        _resources.Clear();
+        // 사용하지 않는 에셋 메모리 해제
+        Resources.UnloadUnusedAssets();
+    }
+
+    public void OnDestroy()
     {
         _resources.Clear();
         // 사용하지 않는 에셋 메모리 해제

@@ -2,50 +2,61 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : Singleton<InputManager>, IManager
+public class InputManager : IManager
 {
+    private bool _init = false;
     private GameControls _controls;
 
+    // 이벤트 선언
     public event Action OnMenuPressed;
 
     public Vector2 MoveDirection => _controls?.Player.Move.ReadValue<Vector2>() ?? Vector2.zero;
 
-    private bool _init = false;
     public void Init()
     {
-        if(_init) return;
+        if (_init) return;
         _init = true;
 
         _controls = new GameControls();
 
         // 이벤트 바인딩, 여기에 이벤트 추가
         _controls.Player.Menu.performed += OnMenuPerformed;
-    }
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
-    private void OnEnable()
-    {
+        // 입력 활성화
         _controls?.Enable();
     }
 
-    private void OnDisable()
+    // 외부에서 입력을 껐다 켰다 할 수 있게함
+    public void SetInput(bool active)
     {
-        _controls?.Disable();
+        if (_controls == null) return;
+
+        if (active)
+            _controls.Enable();
+        else
+            _controls.Disable();
     }
 
-    protected override void OnDestroy()
+    public void Clear()
+    {
+        OnMenuPressed = null;
+    }
+
+    public void OnDestroy()
     {
         if (_controls != null)
         {
+            // 구독 해제
             _controls.Player.Menu.performed -= OnMenuPerformed;
+
+            // 비활성화 및 메모리 해제
+            _controls.Disable();
             _controls.Dispose();
+            _controls = null;
         }
 
-        base.OnDestroy(); // 부모의 종료 처리(플래그 설정 등) 실행
+        OnMenuPressed = null;
+        _init = false;
     }
 
     private void OnMenuPerformed(InputAction.CallbackContext context)

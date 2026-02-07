@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class UIManager : Singleton<UIManager>, IManager
+public class UIManager : IManager
 {
+    private bool _init = false;
     private int _order = 10;
     private Stack<UI_Popup> _popupStack = new Stack<UI_Popup>();
     private UI_Scene _sceneUI = null;
+    public int PopupCount => _popupStack.Count;
     private GameObject _root;
     public GameObject Root
     {
@@ -23,13 +25,13 @@ public class UIManager : Singleton<UIManager>, IManager
         }
     }
 
-    private bool _init = false;
     public void Init()
     {
-        if(_init) return;
+        if (_init) return;
         _init = true;
 
         // 초기화 로직
+        _order = 10;
     }
 
     public void SetCanvas(GameObject go, bool sort = true, int sortOrder = 0)
@@ -148,6 +150,15 @@ public class UIManager : Singleton<UIManager>, IManager
     public void Clear()
     {
         CloseAllPopupUI();
+        _sceneUI = null;
+        _root = null;
+        _order = 10;
+    }
+
+    public void OnDestroy()
+    {
+        CloseAllPopupUI();
+        _popupStack = null;
         _sceneUI = null;
     }
 }

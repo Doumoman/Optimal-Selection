@@ -4,9 +4,9 @@ public class Managers : Singleton<Managers>, IManager
 {
     #region Core
     // 기반 관련
-    private ResourceManager _resource;
-    private UIManager _ui;
-    private InputManager _input;
+    private ResourceManager _resource = new ResourceManager();
+    private UIManager _ui = new UIManager();
+    private InputManager _input = new InputManager();
     #endregion
 
     #region Contents
@@ -21,34 +21,38 @@ public class Managers : Singleton<Managers>, IManager
     protected override void Awake()
     {
         base.Awake();
-        Init();
+        Init(); // 가장 먼저 다른 Manager들 초기화
+    }
+    private void Update()
+    {
+
     }
 
     private bool _init = false;
     public void Init()
     {
-        if( _init ) return;
+        if (_init) return;
         _init = true;
 
-        // 인스턴스 할당
-        _resource = new ResourceManager();
-        _ui = UIManager.Instance;
-        _input = InputManager.Instance;
-
-        // 계층 구조 정리
-        _ui.transform.SetParent(transform);
-        _input.transform.SetParent(transform);
-
-        // 매니저 초기화 순서 제어
+        // 매니저 인스턴스 생성 및 초기화 순서 제어
         _resource.Init();
-        _ui.Init();
         _input.Init();
+        _ui.Init();
     }
 
-    // 씬 이동 시 데이터 정리
     public static void Clear()
     {
         Resource.Clear();
+        Input.Clear();
         UI.Clear();
+    }
+
+    protected override void OnDestroy() 
+    {
+        base.OnDestroy();
+
+        Resource.OnDestroy();
+        Input.OnDestroy();
+        UI.OnDestroy();
     }
 }
