@@ -42,17 +42,17 @@ public class Managers : Singleton<Managers>, IManager
 
     public static void Clear()
     {
-        Resource.Clear();
-        Input.Clear();
         UI.Clear();
+        Input.Clear();
+        Resource.Clear();
     }
 
     protected override void OnDestroy() 
     {
-        base.OnDestroy();
+        if(_resource != null) _resource.OnDestroy();
+        if (_input != null) _input.OnDestroy();
+        if (_ui != null) _ui.OnDestroy();
 
-        Resource.OnDestroy();
-        Input.OnDestroy();
-        UI.OnDestroy();
+        base.OnDestroy();
     }
 }

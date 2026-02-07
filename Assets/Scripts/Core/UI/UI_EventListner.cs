@@ -1,20 +1,12 @@
 ﻿using UnityEngine;
 
-public class UI_EventListener : Singleton<UI_EventListener>
+public class UI_EventListener : MonoBehaviour
 {
     private void Start()
     {
         // UI 관련 입력 이벤트들 구독
         Managers.Input.OnMenuPressed -= HandleEscKey;
         Managers.Input.OnMenuPressed += HandleEscKey;
-    }
-
-    protected override void OnDestroy()
-    {
-        if (Managers.Instance != null && Managers.Input != null)
-        {
-            Managers.Input.OnMenuPressed -= HandleEscKey;
-        }
     }
 
     private void SetPlayerInput(bool allowInput)
