@@ -17,10 +17,11 @@ public class PlayerController : MonoBehaviour
     public BoxCollider2D bc;
 
     public float moveSpeed = 5f;
-    public Vector2 moveDir;
+    public Vector2 moveDir { get; private set; }
     public Vector2 lastDir;
 
-    public bool isInputBlocked; // 플레이어 입력을 막을 것인지 체크
+    public bool isSneakPressed {  get; private set; }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -36,15 +37,17 @@ public class PlayerController : MonoBehaviour
 
         lastDir = Vector2.down;
         ChangeState(idleState);
+
+        Managers.Input.OnMove -= HandleGamePlayMove;
+        Managers.Input.OnMove += HandleGamePlayMove;
+
+        Managers.Input.OnSneakPressed -= HandleGamePlaySneak;
+        Managers.Input.OnSneakPressed += HandleGamePlaySneak;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-        moveDir = new Vector2(h, v).normalized; // 방향벡터 정규화
-
         if (moveDir != Vector2.zero)
         {
             lastDir = moveDir;
@@ -63,6 +66,15 @@ public class PlayerController : MonoBehaviour
         }
         currentState?.Update();
     }
+
+    private void LateUpdate()
+    {
+        isSneakPressed = false;       
+    }
+
+    public void HandleGamePlayMove(Vector2 dir) => moveDir = dir;
+    public void HandleGamePlaySneak() => isSneakPressed = true;
+
 
     public void ChangeState(PlayerBaseState newState)
     {
@@ -91,7 +103,7 @@ public class IdleState : PlayerBaseState
 
     public override void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (playerContext.isSneakPressed)
         {
             playerContext.ChangeState(playerContext.sneakState);
             return;
@@ -122,13 +134,13 @@ public class SneakState : PlayerBaseState
 
     public override void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (playerContext.isSneakPressed)
         {
-            playerContext.ChangeState(playerContext.idleState);
+            playerContext.ChangeState(playerContext.walkState);
             return;
         }
 
-        if(playerContext.moveDir != Vector2.zero)
+        if (playerContext.moveDir != Vector2.zero)
         {
             playerContext.ChangeState(playerContext.sneakMoveState);
             return;
@@ -154,7 +166,7 @@ public class SneakMoveState : PlayerBaseState
 
     public override void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (playerContext.isSneakPressed)
         {
             playerContext.ChangeState(playerContext.walkState);
             return;
@@ -189,20 +201,19 @@ public class WalkState : PlayerBaseState
 
     public override void Update()
     {
+        if (playerContext.isSneakPressed)
+        {
+            playerContext.ChangeState(playerContext.sneakMoveState);
+            return;
+        }
+
         if (playerContext.moveDir == Vector2.zero)
         {
             playerContext.ChangeState(playerContext.idleState);
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            playerContext.ChangeState(playerContext.sneakMoveState);
-            return;
-        }
-
         PlayAnimation(this);
-
         playerContext.transform.Translate(playerContext.moveDir * playerContext.moveSpeed * Time.deltaTime);
     }
 
@@ -216,18 +227,9 @@ public class SpecialState : PlayerBaseState
 {
     public SpecialState(PlayerController pc) : base(pc) { }
 
-    public override void Enter()
-    {
+    public override void Enter() { }
+    public override void Update() { }
 
-    }
-    public override void Update()
-    {
-
-    }
-
-    public override void Exit()
-    {
-
-    }
+    public override void Exit() { }
 }
 #endregion

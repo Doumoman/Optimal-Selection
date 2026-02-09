@@ -3,7 +3,7 @@
     "name": "GameControls",
     "maps": [
         {
-            "name": "Player",
+            "name": "GamePlay",
             "id": "25c02bea-cf90-43d2-9629-78b48f875a6c",
             "actions": [
                 {
@@ -14,6 +14,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Sneak",
+                    "type": "Button",
+                    "id": "60b2514c-fd8a-41b9-9cc3-3e873faa6104",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Menu",
@@ -40,7 +49,7 @@
                 {
                     "name": "up",
                     "id": "0763416f-305c-4250-83a8-f6ecfd36c7fb",
-                    "path": "",
+                    "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -51,7 +60,7 @@
                 {
                     "name": "down",
                     "id": "6ca5d090-f66b-4e7d-8831-b8e2c7c02d19",
-                    "path": "",
+                    "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -62,7 +71,7 @@
                 {
                     "name": "left",
                     "id": "c150daa8-8cb9-44a7-b2dd-d468c7c895bc",
-                    "path": "",
+                    "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -73,7 +82,7 @@
                 {
                     "name": "right",
                     "id": "e82ca0ca-cb83-4c22-bb21-2b00edc5852c",
-                    "path": "",
+                    "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -89,6 +98,129 @@
                     "processors": "",
                     "groups": "",
                     "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44444f74-72e6-4742-b50c-302171118354",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sneak",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "293ac3c7-9104-42f4-95ea-c5fad1bec964",
+            "actions": [
+                {
+                    "name": "Navigate",
+                    "type": "Value",
+                    "id": "7d586213-138f-4549-ac71-ac1183db10fa",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Submit",
+                    "type": "Button",
+                    "id": "a8938598-8475-47fa-a64a-5bd133b29a71",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Cancel",
+                    "type": "Button",
+                    "id": "5ad492c4-cde6-47e8-8cd4-25fd124706be",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d46ad09f-cdfb-40fb-8eb8-e73d7c5b1ae8",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "ec670d72-eafc-41e0-8800-43e38b7c5999",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Navigate",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "3e68c031-34cd-4eed-9488-848b5825baa3",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "469b838e-5d54-4443-b88c-af9f8487b1fa",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "89ed1b4a-c2a4-4c50-b560-bc3aee2d73b4",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "ef05721f-e4f0-466a-8c5c-a1376c324e74",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "4be511df-d6fa-40f2-aae5-9ca526ebe940",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

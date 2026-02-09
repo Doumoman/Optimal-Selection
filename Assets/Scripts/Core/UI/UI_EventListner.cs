@@ -5,21 +5,20 @@ public class UI_EventListener : MonoBehaviour
     private void Start()
     {
         // UI 관련 입력 이벤트들 구독
-        Managers.Input.OnMenuPressed -= HandleEscKey;
-        Managers.Input.OnMenuPressed += HandleEscKey;
+        Managers.Input.OnMenuPressed -= HandleGamePlayMenu;
+        Managers.Input.OnMenuPressed += HandleGamePlayMenu;
+
+        Managers.Input.OnNavigate -= HandleUINavigate;
+        Managers.Input.OnNavigate += HandleUINavigate;
+
+        Managers.Input.OnSubmitPressed -= HandleUISubmit;
+        Managers.Input.OnSubmitPressed += HandleUISubmit;
+
+        Managers.Input.OnCancelPressed -= HandleUICancel;
+        Managers.Input.OnCancelPressed += HandleUICancel;
     }
 
-    private void SetPlayerInput(bool allowInput)
-    {
-        // 현재 씬의 플레이어를 찾아서 설정
-        var player = FindFirstObjectByType<PlayerController>();
-        if (player != null)
-        {
-            player.isInputBlocked = !allowInput;
-        }
-    }
-
-    private void HandleEscKey()
+    private void HandleGamePlayMenu()
     {
         int currentPopupCount = Managers.UI.PopupCount;
         if (currentPopupCount > 0)
@@ -28,13 +27,44 @@ public class UI_EventListener : MonoBehaviour
 
             if (Managers.UI.PopupCount == 0)
             {
-                SetPlayerInput(true);
+                Managers.Input.SetInputMode(false);
             }
         }
         else
         {
             Managers.UI.ShowPopupUI<UI_Popup_Menu>("UI_Popup_Menu");
-            SetPlayerInput(false);
+            Managers.Input.SetInputMode(true);
+        }
+    }
+
+    private void HandleUINavigate(Vector2 dir)
+    {
+        var popup = Managers.UI.GetTopPopup();
+        if (popup != null)
+        {
+            popup.OnInput(dir);
+        }
+    }
+
+    private void HandleUISubmit()
+    {
+        var popup = Managers.UI.GetTopPopup();
+        if (popup != null)
+        {
+            popup.OnSubmit();
+        }
+    }
+    private void HandleUICancel()
+    {
+        var popup = Managers.UI.GetTopPopup();
+        if (popup != null)
+        {
+            popup.OnCancel();
+        }
+
+        if (Managers.UI.PopupCount == 0)
+        {
+            Managers.Input.SetInputMode(false);
         }
     }
 }

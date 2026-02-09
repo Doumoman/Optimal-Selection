@@ -113,6 +113,12 @@ public class UIManager : IManager
         return popup;
     }
 
+    public UI_Popup GetTopPopup()
+    {
+        if (_popupStack.Count == 0) return null;
+        return _popupStack.Peek();
+    }
+
     public void ClosePopupUI(UI_Popup popup)
     {
         if (_popupStack.Count == 0) return;
@@ -157,7 +163,6 @@ public class UIManager : IManager
 
     public void OnDestroy()
     {
-        CloseAllPopupUI();
         _popupStack = null;
         _sceneUI = null;
     }
