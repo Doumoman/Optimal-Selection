@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class UI_Popup_Menu : UI_Popup
 {
-    [SerializeField] private GameObject menuPanel;
+    [SerializeField] private Transform menuPanel;
+    [SerializeField] private Transform btnPanel;
+    [SerializeField] private Transform textPanel;
 
     [Header("Stats Info")]
     [SerializeField] private TextMeshProUGUI txtLocation;
@@ -32,6 +34,9 @@ public class UI_Popup_Menu : UI_Popup
 
         _canInput = false;
         StartCoroutine(CoInitCursorPosition());
+
+        // 버튼 이벤트 추가
+        menuButtons[0].onClick.AddListener(ShowInventoryPopup);
     }
 
     private void Start()
@@ -74,6 +79,12 @@ public class UI_Popup_Menu : UI_Popup
         if (!_canInput) return;
         // ESC 입력 처리 (팝업 닫기)
         Managers.UI.ClosePopupUI();
+    }
+
+    private void ShowInventoryPopup()
+    {
+        var popup = Managers.UI.ShowPopupUI<UI_Popup_Inventory>("UI_Popup_Inventory");
+        popup.transform.SetParent(btnPanel.transform, false);
     }
 
     private IEnumerator CoInitCursorPosition()
