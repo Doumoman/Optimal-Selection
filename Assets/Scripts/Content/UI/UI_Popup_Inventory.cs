@@ -1,15 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UI_Popup_Inventory : UI_Popup
 {
     [SerializeField] private Transform _gridParent;
     [SerializeField] private RectTransform _cursor;
+    [SerializeField] private TextMeshProUGUI _pageText;
 
     private int _selectedIndex = 0;
     private int _columnCount = 3;
-    public List<UI_Element_ItemSlot> _itemSlots = new List<UI_Element_ItemSlot>();
+    private int _pageSize = 6;
+    private int _pageCount = 2;
+
+    private List<UI_Element_ItemSlot> _itemSlots = new List<UI_Element_ItemSlot>();
+    private List<ItemData> _allItems = new List<ItemData>(); // 실제 보유한 아이템은 나중에 ItemManager로 관리하자
 
     private Vector2 offset = new Vector2(10f, 0);
     private bool _init;
@@ -21,9 +27,28 @@ public class UI_Popup_Inventory : UI_Popup
         base.Init();
         _init = true;
 
+        // 테스트 용 아이템 12개
+        _allItems.Clear();
+        for (int i = 0; i < 12; i++)
+        {
+            _allItems.Add(new ItemData { name = $"아이템 {i}", description = $"설명 {i}" });
+        }
+
+        foreach (Transform child in _gridParent)
+            Managers.Resource.Destroy(child.gameObject);
+        _itemSlots.Clear();
+
+        for (int i = 0; i < _pageSize; i++)
+        {
+            GameObject go = Managers.Resource.Instantiate("UI/Element/UI_Element_ItemSlot", _gridParent);
+            _itemSlots.Add(go.GetComponent<UI_Element_ItemSlot>());
+        }
+
         _selectedIndex = 0;
         _columnCount = 3;
+        _pageSize = 6;
 
+        UpdatePage();
         _canInput = false;
         StartCoroutine(CoInitCursorPosition());
     }
@@ -39,6 +64,7 @@ public class UI_Popup_Inventory : UI_Popup
         if (_itemSlots.Count == 0) return;
 
         int prevIndex = _selectedIndex;
+        int prevPage = _selectedIndex / _pageSize;
 
         // 1. 방향에 따른 인덱스 계산
         if (direction.x > 0) _selectedIndex++;             // 오른쪽
@@ -47,11 +73,17 @@ public class UI_Popup_Inventory : UI_Popup
         else if (direction.y > 0) _selectedIndex -= _columnCount; // 위 (행 변경)
 
         // 2. 범위 제한 (0 ~ 마지막 아이템)
-        _selectedIndex = Mathf.Clamp(_selectedIndex, 0, _itemSlots.Count - 1);
+        _selectedIndex = Mathf.Clamp(_selectedIndex, 0, _allItems.Count - 1);
 
         // 3. 인덱스가 바뀌었을 때만 UI 갱신
         if (prevIndex != _selectedIndex)
         {
+            int curPage = _selectedIndex / _pageSize;
+            if(prevPage != curPage)
+            {
+                UpdatePage();
+            }
+
             UpdateCursor();
         }
     }
@@ -62,7 +94,7 @@ public class UI_Popup_Inventory : UI_Popup
         if (_itemSlots.Count == 0) return;
 
         Debug.Log($"선택된 아이템 인덱스: {_selectedIndex}");
-        _itemSlots[_selectedIndex].OnSlotClicked(); // 아이템 설명, 사용 팝업 띄우기
+        _itemSlots[_selectedIndex % _pageSize].OnSlotClicked(); // 아이템 설명, 사용 팝업 띄우기
     }
 
     public override void OnCancel() // 취소/닫기(esc) 로직
@@ -83,9 +115,9 @@ public class UI_Popup_Inventory : UI_Popup
 
     private void UpdateCursor()
     {
-        if (_itemSlots == null || _itemSlots.Count <= _selectedIndex || _cursor == null) return;
+        if (_itemSlots == null || _itemSlots.Count <= _selectedIndex % _pageSize || _cursor == null) return;
 
-        RectTransform targetRect = _itemSlots[_selectedIndex].GetComponent<RectTransform>();
+        RectTransform targetRect = _itemSlots[_selectedIndex % _pageSize].GetComponent<RectTransform>();
 
         // 선택 버튼의 위치 = (타겟 버튼의 중심 + 타겟 버튼의 너비 / 2 + 오프셋)
         Vector3 finalPos = targetRect.position;
@@ -95,5 +127,29 @@ public class UI_Popup_Inventory : UI_Popup
 
         // _selectedIndex = 5에서 오른쪽 방향키 누르면 다음 페이지로 넘어가야함
         // _selectedIndex = 6에서 왼쪽 방향키 누르면 이전 페이지로 넘어가야함
+    }
+
+    private void UpdatePage()
+    {
+        int currentPage = _selectedIndex / _pageSize; // 0 or 1
+        int startDataIndex = currentPage * _pageSize; // 0 or 6
+
+        _pageText.text = $"페이지 {currentPage + 1} / {_pageCount}";
+
+        for (int i = 0; i < _pageSize; i++)
+        {
+            int dataIndex = startDataIndex + i; // 보여줄 데이터 번호
+
+            if (dataIndex < _allItems.Count)
+            {
+                // 데이터가 있으면 그 슬롯에 아이템 세팅
+                _itemSlots[i].SetItem(_allItems[dataIndex]);
+            }
+            else
+            {
+                // 데이터가 없으면 빈 슬롯 처리
+                _itemSlots[i].SetItem(null);
+            }
+        }
     }
 }
