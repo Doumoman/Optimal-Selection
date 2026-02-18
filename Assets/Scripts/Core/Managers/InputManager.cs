@@ -11,7 +11,7 @@ public class InputManager : IManager
     public event Action OnMenuPressed;       // 메뉴 열기
     public event Action<Vector2> OnMove;     // 플레이어 이동
     public event Action OnSneakPressed;      // 플레이어 숙이기
-    public event Action<Vector2> OnNavigate; // UI 이동
+    public event Action<Vector2> OnInput; // UI 이동
     public event Action OnSubmitPressed;     // 확인 (Enter)
     public event Action OnCancelPressed;     // 취소 (Esc)
 
@@ -30,7 +30,7 @@ public class InputManager : IManager
         _controls.GamePlay.Sneak.performed += ctv => OnSneakPressed?.Invoke();
         _controls.GamePlay.Move.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
         _controls.GamePlay.Move.canceled += ctx => OnMove?.Invoke(Vector2.zero);
-        _controls.UI.Navigate.performed += ctx => OnNavigate?.Invoke(ctx.ReadValue<Vector2>());
+        _controls.UI.Input.performed += ctx => OnInput?.Invoke(ctx.ReadValue<Vector2>());
         _controls.UI.Submit.performed += ctx => OnSubmitPressed?.Invoke();
         _controls.UI.Cancel.performed += ctx => OnCancelPressed?.Invoke();
 
@@ -80,7 +80,7 @@ public class InputManager : IManager
             _controls.GamePlay.Menu.performed -= ctv => OnMenuPressed?.Invoke();
             _controls.GamePlay.Sneak.performed -= ctv => OnSneakPressed?.Invoke();
             _controls.GamePlay.Move.performed -= ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
-            _controls.UI.Navigate.performed -= ctx => OnNavigate?.Invoke(ctx.ReadValue<Vector2>());
+            _controls.UI.Input.performed -= ctx => OnInput?.Invoke(ctx.ReadValue<Vector2>());
             _controls.UI.Submit.performed -= ctx => OnSubmitPressed?.Invoke();
             _controls.UI.Cancel.performed -= ctx => OnCancelPressed?.Invoke();
 

@@ -8,8 +8,8 @@ public class UI_EventListener : MonoBehaviour
         Managers.Input.OnMenuPressed -= HandleGamePlayMenu;
         Managers.Input.OnMenuPressed += HandleGamePlayMenu;
 
-        Managers.Input.OnNavigate -= HandleUINavigate;
-        Managers.Input.OnNavigate += HandleUINavigate;
+        Managers.Input.OnInput -= HandleUIInput;
+        Managers.Input.OnInput += HandleUIInput;
 
         Managers.Input.OnSubmitPressed -= HandleUISubmit;
         Managers.Input.OnSubmitPressed += HandleUISubmit;
@@ -37,7 +37,7 @@ public class UI_EventListener : MonoBehaviour
         }
     }
 
-    private void HandleUINavigate(Vector2 dir)
+    private void HandleUIInput(Vector2 dir)
     {
         var popup = Managers.UI.GetTopPopup();
         if (popup != null)

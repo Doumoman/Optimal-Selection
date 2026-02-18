@@ -119,7 +119,7 @@
             "id": "293ac3c7-9104-42f4-95ea-c5fad1bec964",
             "actions": [
                 {
-                    "name": "Navigate",
+                    "name": "Input",
                     "type": "Value",
                     "id": "7d586213-138f-4549-ac71-ac1183db10fa",
                     "expectedControlType": "Vector2",
@@ -165,7 +165,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Navigate",
+                    "action": "Input",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -176,7 +176,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Navigate",
+                    "action": "Input",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -187,7 +187,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Navigate",
+                    "action": "Input",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -198,7 +198,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Navigate",
+                    "action": "Input",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -209,7 +209,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Navigate",
+                    "action": "Input",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UI_Popup_Inventory : UI_Popup
@@ -64,13 +65,60 @@ public class UI_Popup_Inventory : UI_Popup
         if (_itemSlots.Count == 0) return;
 
         int prevIndex = _selectedIndex;
-        int prevPage = _selectedIndex / _pageSize;
+        int currentPage = _selectedIndex / _pageSize;
+        int lastPage = (_allItems.Count - 1) / _pageSize;
 
         // 1. 방향에 따른 인덱스 계산
-        if (direction.x > 0) _selectedIndex++;             // 오른쪽
-        else if (direction.x < 0) _selectedIndex--;        // 왼쪽
-        else if (direction.y < 0) _selectedIndex += _columnCount; // 아래 (행 변경)
-        else if (direction.y > 0) _selectedIndex -= _columnCount; // 위 (행 변경)
+        if (direction.x > 0) // 오른쪽
+        {
+            // 현재 열이 마지막 열인지 확인
+            if (_selectedIndex % _columnCount == _columnCount - 1)
+            {
+                if (currentPage < lastPage)
+                {
+                    // 마지막 페이지가 아닌 경우에만 다음 페이지의 같은 행 첫 번째 열로 이동
+                    _selectedIndex += (_pageSize - _columnCount + 1);
+                }
+                else
+                {
+                    // 마지막 페이지의 마지막 열인 경우 단순 플러스
+                    _selectedIndex++;
+                }
+            }
+            else
+            {
+                _selectedIndex++;
+            }
+        }
+        else if (direction.x < 0) // 왼쪽
+        {
+            // 현재 열이 첫 번째 열인지 확인
+            if (_selectedIndex % _columnCount == 0)
+            {
+                if (currentPage > 0)
+                {
+                    // 첫 페이지가 아닐 경우에만 이전 페이지의 같은 행 마지막 열로 이동
+                    _selectedIndex -= (_pageSize - _columnCount + 1);
+                }
+                else
+                {
+                    // 첫 번째 페이지의 첫 번째 열인 경우 단순 마이너스
+                    _selectedIndex--;
+                }
+            }
+            else
+            {
+                _selectedIndex--;
+            }
+        }
+        else if (direction.y < 0) // 아래 (행 변경)
+        {
+            _selectedIndex += _columnCount;
+        }
+        else if (direction.y > 0) // 위 (행 변경)
+        {
+            _selectedIndex -= _columnCount;
+        }
 
         // 2. 범위 제한 (0 ~ 마지막 아이템)
         _selectedIndex = Mathf.Clamp(_selectedIndex, 0, _allItems.Count - 1);
@@ -78,7 +126,9 @@ public class UI_Popup_Inventory : UI_Popup
         // 3. 인덱스가 바뀌었을 때만 UI 갱신
         if (prevIndex != _selectedIndex)
         {
+            int prevPage = prevIndex / _pageSize;
             int curPage = _selectedIndex / _pageSize;
+
             if(prevPage != curPage)
             {
                 UpdatePage();
@@ -125,8 +175,8 @@ public class UI_Popup_Inventory : UI_Popup
         finalPos.x += halfWidth;
         _cursor.position = finalPos + (Vector3)offset;
 
-        // _selectedIndex = 5에서 오른쪽 방향키 누르면 다음 페이지로 넘어가야함
-        // _selectedIndex = 6에서 왼쪽 방향키 누르면 이전 페이지로 넘어가야함
+        // _selectedIndex = 2,5에서 오른쪽 방향키 누르면 다음 페이지로 넘어가야함
+        // _selectedIndex = 6,9에서 왼쪽 방향키 누르면 이전 페이지로 넘어가야함
     }
 
     private void UpdatePage()
