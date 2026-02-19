@@ -11,10 +11,9 @@ public class InputManager : IManager
     public event Action OnMenuPressed;       // 메뉴 열기
     public event Action<Vector2> OnMove;     // 플레이어 이동
     public event Action OnSneakPressed;      // 플레이어 숙이기
-    public event Action<Vector2> OnInput; // UI 이동
+    public event Action<Vector2> OnInput;    // UI 이동
     public event Action OnSubmitPressed;     // 확인 (Enter)
     public event Action OnCancelPressed;     // 취소 (Esc)
-
 
     public Vector2 MoveDirection => _controls?.GamePlay.Move.ReadValue<Vector2>() ?? Vector2.zero;
 
@@ -25,19 +24,17 @@ public class InputManager : IManager
 
         _controls = new GameControls();
 
-        // 이벤트 바인딩, 여기에 이벤트 추가
-        _controls.GamePlay.Menu.performed += ctv => OnMenuPressed?.Invoke();
-        _controls.GamePlay.Sneak.performed += ctv => OnSneakPressed?.Invoke();
-        _controls.GamePlay.Move.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
-        _controls.GamePlay.Move.canceled += ctx => OnMove?.Invoke(Vector2.zero);
-        _controls.UI.Input.performed += ctx => OnInput?.Invoke(ctx.ReadValue<Vector2>());
-        _controls.UI.Submit.performed += ctx => OnSubmitPressed?.Invoke();
-        _controls.UI.Cancel.performed += ctx => OnCancelPressed?.Invoke();
+        _controls.GamePlay.Menu.performed += HandleMenuPerformed;
+        _controls.GamePlay.Sneak.performed += HandleSneakPerformed;
+        _controls.GamePlay.Move.performed += HandleMovePerformed;
+        _controls.GamePlay.Move.canceled += HandleMoveCanceled;
+
+        _controls.UI.Input.performed += HandleUIInputPerformed;
+        _controls.UI.Submit.performed += HandleSubmitPerformed;
+        _controls.UI.Cancel.performed += HandleCancelPerformed;
 
         // 초기에는 플레이어 활성화, UI 비활성화
         _controls?.Enable();
-        _controls.UI.Disable();
-
         SetInputMode(false);
     }
 
@@ -55,6 +52,8 @@ public class InputManager : IManager
     // 모드 전환 기능 (캐릭터 조작 <-> UI 조작)
     public void SetInputMode(bool isUI)
     {
+        if (_controls == null) return;
+
         if (isUI)
         {
             _controls.GamePlay.Disable();
@@ -70,19 +69,26 @@ public class InputManager : IManager
     public void Clear()
     {
         OnMenuPressed = null;
+        OnMove = null;
+        OnSneakPressed = null;
+        OnInput = null;
+        OnSubmitPressed = null;
+        OnCancelPressed = null;
     }
 
     public void OnDestroy()
     {
         if (_controls != null)
         {
-            // 구독 해제
-            _controls.GamePlay.Menu.performed -= ctv => OnMenuPressed?.Invoke();
-            _controls.GamePlay.Sneak.performed -= ctv => OnSneakPressed?.Invoke();
-            _controls.GamePlay.Move.performed -= ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
-            _controls.UI.Input.performed -= ctx => OnInput?.Invoke(ctx.ReadValue<Vector2>());
-            _controls.UI.Submit.performed -= ctx => OnSubmitPressed?.Invoke();
-            _controls.UI.Cancel.performed -= ctx => OnCancelPressed?.Invoke();
+            // 💡 명시적 메서드로 완벽하게 구독 해제
+            _controls.GamePlay.Menu.performed -= HandleMenuPerformed;
+            _controls.GamePlay.Sneak.performed -= HandleSneakPerformed;
+            _controls.GamePlay.Move.performed -= HandleMovePerformed;
+            _controls.GamePlay.Move.canceled -= HandleMoveCanceled;
+
+            _controls.UI.Input.performed -= HandleUIInputPerformed;
+            _controls.UI.Submit.performed -= HandleSubmitPerformed;
+            _controls.UI.Cancel.performed -= HandleCancelPerformed;
 
             // 비활성화 및 메모리 해제
             _controls.Disable();
@@ -90,7 +96,20 @@ public class InputManager : IManager
             _controls = null;
         }
 
-        OnMenuPressed = null;
+        Clear();
         _init = false;
     }
+
+    #region Input Action Handlers (명시적 콜백 메서드들)
+
+    private void HandleMenuPerformed(InputAction.CallbackContext context) => OnMenuPressed?.Invoke();
+    private void HandleSneakPerformed(InputAction.CallbackContext context) => OnSneakPressed?.Invoke();
+    private void HandleMovePerformed(InputAction.CallbackContext context) => OnMove?.Invoke(context.ReadValue<Vector2>());
+    private void HandleMoveCanceled(InputAction.CallbackContext context) => OnMove?.Invoke(Vector2.zero);
+
+    private void HandleUIInputPerformed(InputAction.CallbackContext context) => OnInput?.Invoke(context.ReadValue<Vector2>());
+    private void HandleSubmitPerformed(InputAction.CallbackContext context) => OnSubmitPressed?.Invoke();
+    private void HandleCancelPerformed(InputAction.CallbackContext context) => OnCancelPressed?.Invoke();
+
+    #endregion
 }
