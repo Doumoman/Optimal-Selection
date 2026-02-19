@@ -427,9 +427,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   bc: {fileID: 0}
   moveSpeed: 5
-  moveDir: {x: 0, y: 0}
   lastDir: {x: 0, y: 0}
-  isInputBlocked: 0
 --- !u!61 &584693040
 BoxCollider2D:
   m_ObjectHideFlags: 0

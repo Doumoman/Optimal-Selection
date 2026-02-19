@@ -1,29 +1,18 @@
 ﻿using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_Popup_Menu : UI_Popup
+public class UI_Popup_ItemInfo : UI_Popup
 {
-    [SerializeField] private Transform menuPanel;
-    [SerializeField] private Transform btnPanel;
-    [SerializeField] private Transform textPanel;
+    [SerializeField] private RectTransform cursor;
+    private Vector2 cursorOffset = new Vector2(5f, 0f);
 
-    [Header("Stats Info")]
-    [SerializeField] private TextMeshProUGUI txtLocation;
-    [SerializeField] private TextMeshProUGUI txtHP;
-    [SerializeField] private TextMeshProUGUI txtGold;
-
-    [Header("Button Info")]
     [SerializeField] private Button[] menuButtons;
 
-    [Header("Cursor Info")]
-    public RectTransform cursor;
-    public Vector2 cursorOffset = new Vector2(10f, 0f);
+    private bool _init;
+    private bool _canInput;
+    private int _currentIndex;
 
-    private int _currentIndex = 0;
-    private bool _init = false;
-    private bool _canInput = false;
     public override void Init()
     {
         if (_init) return;
@@ -36,7 +25,9 @@ public class UI_Popup_Menu : UI_Popup
         StartCoroutine(CoInitCursorPosition());
 
         // 버튼 이벤트 추가
-        menuButtons[0].onClick.AddListener(ShowInventoryPopup);
+        menuButtons[0].onClick.AddListener(OnUseButtonClick);
+        menuButtons[1].onClick.AddListener(OnTrashButtonClick);
+        menuButtons[2].onClick.AddListener(OnCloseButtonClick);
     }
 
     private void Start()
@@ -46,8 +37,7 @@ public class UI_Popup_Menu : UI_Popup
 
     public override void OnInput(Vector2 dir)
     {
-        if (!_canInput) return;
-
+        if(!_canInput) return;
         if (dir.x < -0.5f) // 왼쪽
         {
             _currentIndex = (_currentIndex - 1 + menuButtons.Length) % menuButtons.Length;
@@ -77,14 +67,7 @@ public class UI_Popup_Menu : UI_Popup
     public override void OnCancel()
     {
         if (!_canInput) return;
-        // ESC 입력 처리 (팝업 닫기)
-        Managers.UI.ClosePopupUI();
-    }
-
-    private void ShowInventoryPopup()
-    {
-        var popup = Managers.UI.ShowPopupUI<UI_Popup_Inventory>("UI_Popup_Inventory");
-        popup.transform.SetParent(btnPanel.transform, false);
+        base.OnCancel();
     }
 
     private IEnumerator CoInitCursorPosition()
@@ -96,6 +79,7 @@ public class UI_Popup_Menu : UI_Popup
         yield return new WaitForSeconds(0.1f); // 바로 입력되는 것 방지
         _canInput = true;
     }
+
     private void UpdateCursor()
     {
         if (menuButtons == null || menuButtons.Length <= _currentIndex || cursor == null)
@@ -113,5 +97,20 @@ public class UI_Popup_Menu : UI_Popup
         cursor.position = finalPos + (Vector3)cursorOffset;
     }
 
-}
+    private void OnUseButtonClick()
+    {
+        // 아이템 사용 로직
+        Debug.Log("아이템 사용!");
+    }
 
+    private void OnTrashButtonClick()
+    {
+        // 아이템 버리는 로직
+        Debug.Log("아이템 버리기!");
+    }
+
+    private void OnCloseButtonClick()
+    {
+        Managers.UI.ClosePopupUI(this);
+    }
+}
