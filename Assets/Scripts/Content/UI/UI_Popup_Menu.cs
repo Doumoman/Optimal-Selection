@@ -3,6 +3,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
+UI_Popup_Menu : Esc를 눌렀을 때 캐릭터의 현재 상태, 목표, 인벤토리를 고를 수 있는 창
+UI_Popup_Inventory : 메뉴에서 인벤토리를 선택했을때 뜨는 팝업, 여기서 아이템 슬롯을 고를 수 있다
+UI_Element_ItemSlot : 인벤토리에서 각각의 아이템 슬롯을 담당하는 프리팹
+UI_Popup_ItemInfo : 인벤토리에서 하나의 아이템 슬롯을 선택했을 때 뜨는 팝업, 그 아이템의 정보를 띄우고 사용할 것인지 버릴 것인지 등을 결정한다.
+ */
+
 public class UI_Popup_Menu : UI_Popup
 {
     [SerializeField] private Transform menuPanel;

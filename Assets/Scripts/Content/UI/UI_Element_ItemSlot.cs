@@ -12,7 +12,7 @@ public class UI_Element_ItemSlot : MonoBehaviour
 
     public void SetItem(ItemData data)
     {
-        // 아이템데이터를 받아와서 세팅
+        // 아이템 데이터를 받아와서 세팅
         _itemData = data;
     }
 }

@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 
-public class Managers : Singleton<Managers>, IManager
+public class Managers : Singleton<Managers>
 {
     #region Core
     // 기반 관련
     private ResourceManager _resource = new ResourceManager();
     private UIManager _ui = new UIManager();
     private InputManager _input = new InputManager();
+    private DataManager _data = new DataManager();
     #endregion
 
     #region Contents
@@ -17,6 +18,14 @@ public class Managers : Singleton<Managers>, IManager
     public static ResourceManager Resource => Instance._resource;
     public static UIManager UI => Instance._ui;
     public static InputManager Input => Instance._input;
+    public static DataManager Data => Instance._data;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void InitializeBeforeSceneLoad()
+    {
+        var instance = Managers.Instance;
+        Debug.Log("[Managers] System Initialized Before Scene Load.");
+    }
 
     protected override void Awake()
     {
@@ -35,6 +44,7 @@ public class Managers : Singleton<Managers>, IManager
         _init = true;
 
         // 매니저 인스턴스 생성 및 초기화 순서 제어
+        _data.Init();
         _resource.Init();
         _input.Init();
         _ui.Init();
@@ -42,6 +52,7 @@ public class Managers : Singleton<Managers>, IManager
 
     public static void Clear()
     {
+        Data.Clear();
         UI.Clear();
         Input.Clear();
         Resource.Clear();
@@ -52,6 +63,7 @@ public class Managers : Singleton<Managers>, IManager
         if(_resource != null) _resource.OnDestroy();
         if (_input != null) _input.OnDestroy();
         if (_ui != null) _ui.OnDestroy();
+        if(_data != null) _data.OnDestroy();
 
         base.OnDestroy();
     }
