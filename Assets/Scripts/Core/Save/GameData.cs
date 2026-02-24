@@ -9,8 +9,9 @@ public class GameData
     public int currentMapId = 1; // 맵 번호
     public string currentMapStringId = string.Empty; // 맵 고유 ID
 
-    public float playerHealth = 100f; // 체력
+    public int playerHealth = 20; // 체력
     public int playerMalice = 0; // 악의
+    public int playerLevel = 1; // 플레이어 레벨
     public int playerGold = 0; // 골드
 
     public float playTime = 0f; // 플레이 시간
@@ -58,6 +59,6 @@ public class InventoryItemData
     public InventoryItemData(string id, int amount)
     {
         this.itemId = id;
-        this.amount = amount;   
+        this.amount = amount;
     }
 }
