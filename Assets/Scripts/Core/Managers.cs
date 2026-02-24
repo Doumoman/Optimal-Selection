@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Diagnostics;
 
 public class Managers : Singleton<Managers>
 {
@@ -48,6 +49,14 @@ public class Managers : Singleton<Managers>
         _resource.Init();
         _input.Init();
         _ui.Init();
+
+        // UI 이벤트 리스너는 사라지면 
+        if (gameObject.GetComponent<UI_EventListener>() == null)
+        {
+            GameObject evt = new GameObject("@UI_EventListener");
+            evt.AddComponent<UI_EventListener>();
+            evt.transform.SetParent(gameObject.transform, false);
+        }
     }
 
     public static void Clear()
