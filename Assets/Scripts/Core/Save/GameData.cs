@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class GameData
 {
     #region 플레이어 저장 요소
 
-    public int currentMapId = 1; // 맵 번호
-    public string currentMapStringId = string.Empty; // 맵 고유 ID
+    public int currentMapId = 1; // 맵 고유 ID
+    public string currentMapStringId = string.Empty; // 맵 고유 문자열 ID
 
     public int playerHealth = 20; // 체력
     public int playerMalice = 0; // 악의
@@ -45,20 +45,4 @@ public class GameData
     public List<string> unlockedMapIds = new List<string>();
 
     #endregion
-}
-
-[Serializable]
-public class InventoryItemData
-{
-    public string itemId;
-    public int amount;
-    // 아이템 종류?
-    // 사용할 수 있는 아이템인지?
-    // ....
-
-    public InventoryItemData(string id, int amount)
-    {
-        this.itemId = id;
-        this.amount = amount;
-    }
 }

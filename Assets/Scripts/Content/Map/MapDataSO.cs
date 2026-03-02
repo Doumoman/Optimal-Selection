@@ -20,7 +20,7 @@ public class MapDataSO : ScriptableObject
     public List<ItemSpawnData> itemSpawns = new List<ItemSpawnData>();
 
     [Tooltip("상자, 레버, 문 등 상호작용 오브젝트 배치")]
-    public List<ObjectSpawnData> objectSpawns = new List<ObjectSpawnData>();
+    public List<InteractableSpawnData> interactableSpawns = new List<InteractableSpawnData>();
 
     [Header("Settings")]
     public AudioClip bgm;           // 이 맵의 BGM

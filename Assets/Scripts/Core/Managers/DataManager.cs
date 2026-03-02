@@ -101,40 +101,15 @@ public class DataManager : IManager
     #region 데이터 헬퍼 함수 (Inventory)
 
     // 아이템 획득 로직
-    public void AddInventoryItem(string itemId, int amount)
+    public void AddInventoryItem(int itemId, string itemStringId, int count)
     {
-        // 1. 이미 인벤토리에 같은 ID의 아이템이 있는지 검색
-        InventoryItemData item = CurrentData.playerInventory.FirstOrDefault(i => i.itemId == itemId);
 
-        if (item != null)
-        {
-            // 2. 이미 있다면 개수만 증가
-            item.amount += amount;
-        }
-        else
-        {
-            // 3. 없다면 새로 리스트에 추가
-            CurrentData.playerInventory.Add(new InventoryItemData(itemId, amount));
-        }
     }
 
     // 아이템 사용/버리기 로직 (true 반환 시 성공적으로 소모됨)
-    public bool RemoveInventoryItem(string itemId, int amount)
+    public bool RemoveInventoryItem(int itemId, string itemStringId, int amount)
     {
-        InventoryItemData item = CurrentData.playerInventory.FirstOrDefault(i => i.itemId == itemId);
-
-        if (item != null && item.amount >= amount) // 아이템 사용 가능
-        {
-            item.amount -= amount;
-
-            // 다 썼으면 리스트에서 삭제
-            if (item.amount <= 0)
-            {
-                CurrentData.playerInventory.Remove(item);
-            }
-            return true;
-        }
-        return false; // 아이템이 없거나 개수가 모자람
+        return true;
     }
 
     #endregion
