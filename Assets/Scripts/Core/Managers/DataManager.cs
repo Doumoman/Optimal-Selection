@@ -137,15 +137,15 @@ public class DataManager : IManager
 
     public void UpdateInteractedObject(string objectId)
     {
-        if (!CurrentData.interactedObjectIds.Contains(objectId))
-            CurrentData.interactedObjectIds.Add(objectId);
+        if (!CurrentData.interactedObjectIDs.Contains(objectId))
+            CurrentData.interactedObjectIDs.Add(objectId);
         // 맵 로드 될 때 오브젝트 상호작용 여부 결정 (ex. 이미 열었던 문은 계속 열려있음..)
     }
 
     public void UpdateLootedItem(string itemId)
     {
-        if (!CurrentData.lootedItemIds.Contains(itemId))
-            CurrentData.lootedItemIds.Add(itemId);
+        if (!CurrentData.lootedItemIDs.Contains(itemId))
+            CurrentData.lootedItemIDs.Add(itemId);
         // 드랍되어 있는 아이템 획득 했을 때
     }
 
