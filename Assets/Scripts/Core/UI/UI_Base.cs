@@ -56,33 +56,33 @@ public abstract class UI_Base : MonoBehaviour
 
 
     // 자동으로 UI에 이벤트를 연결해주는 함수
-    public static void AddUIEvent(GameObject go, Action<PointerEventData> action, Define.UIEvent type = Define.UIEvent.Click)
+    public static void AddUIEvent(GameObject go, Action<PointerEventData> action, UIEvent type = UIEvent.Click)
     {
         UI_EventHandler evt = Util.GetOrAddComponent<UI_EventHandler>(go);
 
         switch (type)
         {
-            case Define.UIEvent.Click:
+            case UIEvent.Click:
                 evt.onClickHandler -= action;
                 evt.onClickHandler += action;
                 break;
-            case Define.UIEvent.DragBegin:
+            case UIEvent.DragBegin:
                 evt.onBeginDraghandler -= action;
                 evt.onBeginDraghandler += action;
                 break;
-            case Define.UIEvent.Drag:
+            case UIEvent.Drag:
                 evt.onDraghandler -= action;
                 evt.onDraghandler += action;
                 break;
-            case Define.UIEvent.DragEnd:
+            case UIEvent.DragEnd:
                 evt.onEndDraghandler -= action;
                 evt.onEndDraghandler += action;
                 break;
-            case Define.UIEvent.PointerDown:
+            case UIEvent.PointerDown:
                 evt.onPointerDownhandler -= action;
                 evt.onPointerDownhandler += action;
                 break;
-            case Define.UIEvent.PointerUp:
+            case UIEvent.PointerUp:
                 evt.onPointerUphandler -= action;
                 evt.onPointerUphandler += action;
                 break;

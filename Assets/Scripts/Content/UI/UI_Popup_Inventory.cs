@@ -15,7 +15,7 @@ public class UI_Popup_Inventory : UI_Popup
     private int _pageCount = 2;
 
     private List<UI_Element_ItemSlot> _itemSlots = new List<UI_Element_ItemSlot>();
-    private List<ItemData> _allItems = new List<ItemData>(); // 실제 보유한 아이템은 나중에 ItemManager로 관리하자
+    private List<ItemDataSO> _allItems = new List<ItemDataSO>(); // 실제 보유한 아이템은 나중에 ItemManager로 관리하자
 
     private Vector2 offset = new Vector2(10f, 0);
     private bool _init;
@@ -31,7 +31,7 @@ public class UI_Popup_Inventory : UI_Popup
         _allItems.Clear();
         for (int i = 0; i < 12; i++)
         {
-            _allItems.Add(new ItemData { name = $"아이템 {i}", description = $"설명 {i}" });
+            _allItems.Add(new ItemDataSO { name = $"아이템 {i}", description = $"설명 {i}" });
         }
 
         foreach (Transform child in _gridParent)
