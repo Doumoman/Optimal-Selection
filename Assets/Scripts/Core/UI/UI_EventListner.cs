@@ -37,13 +37,13 @@ public class UI_EventListener : MonoBehaviour
 
             if (Managers.UI.PopupCount == 0)
             {
-                Managers.Input.SetInputMode(false);
+                Managers.Input.SetInputModeUI(false);
             }
         }
         else
         {
             Managers.UI.ShowPopupUI<UI_Popup_Menu>("UI_Popup_Menu");
-            Managers.Input.SetInputMode(true);
+            Managers.Input.SetInputModeUI(true);
             StartCoroutine(IgnoreInputForMoment()); // 한 프레임동안 남아있는 입력 방지
         }
     }
@@ -81,7 +81,7 @@ public class UI_EventListener : MonoBehaviour
 
         if (Managers.UI.PopupCount == 0)
         {
-            Managers.Input.SetInputMode(false);
+            Managers.Input.SetInputModeUI(false);
             Time.timeScale = 1f;
         }
     }

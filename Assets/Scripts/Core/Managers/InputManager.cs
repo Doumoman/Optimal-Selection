@@ -9,6 +9,7 @@ public class InputManager : IManager
 
     // 이벤트 선언
     public event Action OnMenuPressed;       // 메뉴 열기
+    public event Action OnInteractPressed;   // 상호작용
     public event Action<Vector2> OnMove;     // 플레이어 이동
     public event Action OnSneakPressed;      // 플레이어 숙이기
     public event Action<Vector2> OnInput;    // UI 이동
@@ -25,9 +26,10 @@ public class InputManager : IManager
         _controls = new GameControls();
 
         _controls.GamePlay.Menu.performed += HandleMenuPerformed;
-        _controls.GamePlay.Sneak.performed += HandleSneakPerformed;
+        _controls.GamePlay.Interact.performed += HandleInteractPerformed;
         _controls.GamePlay.Move.performed += HandleMovePerformed;
         _controls.GamePlay.Move.canceled += HandleMoveCanceled;
+        _controls.GamePlay.Sneak.performed += HandleSneakPerformed;
 
         _controls.UI.Input.performed += HandleUIInputPerformed;
         _controls.UI.Submit.performed += HandleSubmitPerformed;
@@ -35,7 +37,7 @@ public class InputManager : IManager
 
         // 초기에는 플레이어 활성화, UI 비활성화
         _controls?.Enable();
-        SetInputMode(false);
+        SetInputModeUI(false);
     }
 
     // 외부에서 전체 입력을 껐다 켰다 할 수 있게함
@@ -50,7 +52,7 @@ public class InputManager : IManager
     }
 
     // 모드 전환 기능 (캐릭터 조작 <-> UI 조작)
-    public void SetInputMode(bool isUI)
+    public void SetInputModeUI(bool isUI)
     {
         if (_controls == null) return;
 
@@ -69,6 +71,7 @@ public class InputManager : IManager
     public void Clear()
     {
         OnMenuPressed = null;
+        OnInteractPressed = null;
         OnMove = null;
         OnSneakPressed = null;
         OnInput = null;
@@ -82,9 +85,10 @@ public class InputManager : IManager
         {
             // 💡 명시적 메서드로 완벽하게 구독 해제
             _controls.GamePlay.Menu.performed -= HandleMenuPerformed;
-            _controls.GamePlay.Sneak.performed -= HandleSneakPerformed;
+            _controls.GamePlay.Interact.performed -= HandleInteractPerformed;
             _controls.GamePlay.Move.performed -= HandleMovePerformed;
             _controls.GamePlay.Move.canceled -= HandleMoveCanceled;
+            _controls.GamePlay.Sneak.performed -= HandleSneakPerformed;
 
             _controls.UI.Input.performed -= HandleUIInputPerformed;
             _controls.UI.Submit.performed -= HandleSubmitPerformed;
@@ -103,9 +107,10 @@ public class InputManager : IManager
     #region Input Action Handlers (명시적 콜백 메서드들)
 
     private void HandleMenuPerformed(InputAction.CallbackContext context) => OnMenuPressed?.Invoke();
-    private void HandleSneakPerformed(InputAction.CallbackContext context) => OnSneakPressed?.Invoke();
+    private void HandleInteractPerformed(InputAction.CallbackContext context) => OnInteractPressed?.Invoke();
     private void HandleMovePerformed(InputAction.CallbackContext context) => OnMove?.Invoke(context.ReadValue<Vector2>());
     private void HandleMoveCanceled(InputAction.CallbackContext context) => OnMove?.Invoke(Vector2.zero);
+    private void HandleSneakPerformed(InputAction.CallbackContext context) => OnSneakPressed?.Invoke();
 
     private void HandleUIInputPerformed(InputAction.CallbackContext context) => OnInput?.Invoke(context.ReadValue<Vector2>());
     private void HandleSubmitPerformed(InputAction.CallbackContext context) => OnSubmitPressed?.Invoke();
