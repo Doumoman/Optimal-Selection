@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
@@ -16,6 +16,7 @@ public class CameraController : MonoBehaviour
     private void LateUpdate()
     {
         if (target == null) return;
+        if (Managers.UI.PopupCount > 0) return; // UI 떨림 방지
 
         Vector3 targetPos = targetTransform.position + offset;
         Vector3 lerpPos = Vector3.Lerp(transform.position, targetPos, lerpSpeed * Time.deltaTime);
