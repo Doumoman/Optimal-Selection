@@ -17,7 +17,7 @@ public class UI_Popup_Inventory : UI_Popup
     private List<UI_Element_ItemSlot> _itemSlots = new List<UI_Element_ItemSlot>();
     private List<ItemDataSO> _allItems = new List<ItemDataSO>(); // 실제 보유한 아이템은 나중에 ItemManager로 관리하자
 
-    private Vector2 offset = new Vector2(10f, 0);
+    [SerializeField] private Vector2 _cursorOffset;
     private bool _init;
     private bool _canInput;
 
@@ -31,7 +31,10 @@ public class UI_Popup_Inventory : UI_Popup
         _allItems.Clear();
         for (int i = 0; i < 12; i++)
         {
-            _allItems.Add(new ItemDataSO { name = $"아이템 {i}", description = $"설명 {i}" });
+            ItemDataSO dummyItem = ScriptableObject.CreateInstance<ItemDataSO>();
+            dummyItem.itemName = $"아이템 {i}";
+            dummyItem.description = $"설명 {i}";
+            _allItems.Add(dummyItem);
         }
 
         foreach (Transform child in _gridParent)
@@ -168,11 +171,13 @@ public class UI_Popup_Inventory : UI_Popup
 
         RectTransform targetRect = _itemSlots[_selectedIndex % _pageSize].GetComponent<RectTransform>();
 
-        // 선택 버튼의 위치 = (타겟 버튼의 중심 + 타겟 버튼의 너비 / 2 + 오프셋)
-        Vector3 finalPos = targetRect.position;
-        float halfWidth = (targetRect.rect.width / 2f) * targetRect.lossyScale.x;
-        finalPos.x += halfWidth;
-        _cursor.position = finalPos + (Vector3)offset;
+        // 실제 월드 좌표 기준으로 계산
+        // corners[0]: 좌측 하단 / corners[1]: 좌측 상단 / corners[2]: 우측 상단 / corners[3]: 우측 하단
+        Vector3[] corners = new Vector3[4];
+        targetRect.GetWorldCorners(corners);
+
+        Vector3 rightCenterPos = (corners[2] + corners[3]) / 2f;
+        _cursor.position = rightCenterPos + (Vector3)_cursorOffset;
 
         // _selectedIndex = 2,5에서 오른쪽 방향키 누르면 다음 페이지로 넘어가야함
         // _selectedIndex = 6,9에서 왼쪽 방향키 누르면 이전 페이지로 넘어가야함

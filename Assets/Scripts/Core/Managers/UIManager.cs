@@ -7,6 +7,7 @@ public class UIManager : IManager
     private int _order = 10;
     private Stack<UI_Popup> _popupStack = new Stack<UI_Popup>();
     private UI_Scene _sceneUI = null;
+
     public int PopupCount => _popupStack.Count;
     private GameObject _root;
     public GameObject Root
@@ -50,16 +51,22 @@ public class UIManager : IManager
                 canvas.sortingOrder = sortOrder;
             }
         }
-        else
+        else if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
         {
+            canvas.worldCamera = Camera.main;
             if (canvas.worldCamera == null)
             {
-                canvas.worldCamera = Camera.main;
+                canvas.worldCamera = GameObject.FindFirstObjectByType<Camera>();
             }
 
-            if (sort) // WorldSpave UI는 Sorting Layer 설정이 중요한 경우가 많음
+            canvas.overrideSorting = true;
+            if (sort)
             {
-                canvas.overrideSorting = true;
+                canvas.sortingOrder = _order;
+                _order++;
+            }
+            else
+            {
                 canvas.sortingOrder = sortOrder;
             }
         }
@@ -76,7 +83,7 @@ public class UIManager : IManager
             _sceneUI = null;
         }
 
-        GameObject go = Managers.Resource.Instantiate($"UI/Scene/{name}");
+        GameObject go = Managers.Resource.Instantiate($"UI/Scene/{name}", Root.transform);
 
         if (go == null)
         {
@@ -84,7 +91,7 @@ public class UIManager : IManager
             return null;
         }
 
-        go.transform.SetParent(Root.transform);
+        // go.transform.SetParent(Root.transform);
 
         T sceneUI = Util.GetOrAddComponent<T>(go);
         _sceneUI = sceneUI;
@@ -97,7 +104,7 @@ public class UIManager : IManager
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
 
-        GameObject go = Managers.Resource.Instantiate($"UI/Popup/{name}");
+        GameObject go = Managers.Resource.Instantiate($"UI/Popup/{name}", Root.transform);
 
         if (go == null)
         {
@@ -105,7 +112,7 @@ public class UIManager : IManager
             return null;
         }
 
-        go.transform.SetParent(Root.transform);
+        // go.transform.SetParent(Root.transform);
 
         T popup = Util.GetOrAddComponent<T>(go);
         _popupStack.Push(popup);

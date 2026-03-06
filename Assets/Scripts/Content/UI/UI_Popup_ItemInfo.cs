@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class UI_Popup_ItemInfo : UI_Popup
 {
-    [SerializeField] private RectTransform cursor;
-    private Vector2 cursorOffset = new Vector2(5f, 0f);
+    [SerializeField] private RectTransform _cursor;
+    [SerializeField] private Vector2 _cursorOffset;
 
     [SerializeField] private Button[] menuButtons;
 
@@ -82,7 +82,7 @@ public class UI_Popup_ItemInfo : UI_Popup
 
     private void UpdateCursor()
     {
-        if (menuButtons == null || menuButtons.Length <= _currentIndex || cursor == null)
+        if (menuButtons == null || menuButtons.Length <= _currentIndex || _cursor == null)
             return;
 
         Button targetButton = menuButtons[_currentIndex];
@@ -90,11 +90,13 @@ public class UI_Popup_ItemInfo : UI_Popup
 
         RectTransform targetBtnRect = targetButton.GetComponent<RectTransform>();
 
-        // 선택 버튼의 위치 = (타겟 버튼의 중심 + 타겟 버튼의 너비 / 2 + 오프셋)
-        Vector3 finalPos = targetBtnRect.position;
-        float halfWidth = (targetBtnRect.rect.width / 2f) * targetBtnRect.lossyScale.x;
-        finalPos.x += halfWidth;
-        cursor.position = finalPos + (Vector3)cursorOffset;
+        // 실제 월드 좌표 기준으로 계산
+        // corners[0]: 좌측 하단 / corners[1]: 좌측 상단 / corners[2]: 우측 상단 / corners[3]: 우측 하단
+        Vector3[] corners = new Vector3[4];
+        targetBtnRect.GetWorldCorners(corners);
+
+        Vector3 rightCenterPos = (corners[2] + corners[3]) / 2f;
+        _cursor.position = rightCenterPos + (Vector3)_cursorOffset;
     }
 
     private void OnUseButtonClick()
