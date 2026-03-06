@@ -13,6 +13,7 @@ public class Managers : Singleton<Managers>
     #region Contents
     // 게임 로직 관련
     private MapManager _map = new MapManager();
+    private DialogueManager _dialogue = new DialogueManager();
 
     #endregion
 
@@ -21,6 +22,7 @@ public class Managers : Singleton<Managers>
     public static InputManager Input => Instance._input;
     public static DataManager Data => Instance._data;
     public static MapManager Map => Instance._map;
+    public static DialogueManager Dialogue => Instance._dialogue;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void InitializeBeforeSceneLoad()
@@ -51,6 +53,7 @@ public class Managers : Singleton<Managers>
         _input.Init();
         _ui.Init();
         _map.Init();
+        _dialogue.Init();
 
         // UI 이벤트 리스너가 사라지면 
         if (gameObject.GetComponent<UI_EventListener>() == null)
@@ -68,10 +71,12 @@ public class Managers : Singleton<Managers>
         Input.Clear();
         UI.Clear();
         Map.Clear();
+        Dialogue.Clear();
     }
 
     protected override void OnDestroy() 
     {
+        if(_dialogue != null) _dialogue.OnDestroy();
         if (_map != null) _map.OnDestroy();
         if (_ui != null) _ui.OnDestroy();
         if (_input != null) _input.OnDestroy();
