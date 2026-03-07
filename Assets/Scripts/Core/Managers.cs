@@ -17,12 +17,12 @@ public class Managers : Singleton<Managers>
 
     #endregion
 
-    public static ResourceManager Resource => Instance._resource;
-    public static UIManager UI => Instance._ui;
-    public static InputManager Input => Instance._input;
-    public static DataManager Data => Instance._data;
-    public static MapManager Map => Instance._map;
-    public static DialogueManager Dialogue => Instance._dialogue;
+    public static ResourceManager Resource { get { return Instance?._resource; } }
+    public static UIManager UI { get { return Instance?._ui; } }
+    public static InputManager Input { get { return Instance?._input; } }
+    public static DataManager Data { get { return Instance?._data; } }
+    public static MapManager Map { get { return Instance?._map; } }
+    public static DialogueManager Dialogue { get { return Instance?._dialogue; } }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void InitializeBeforeSceneLoad()
