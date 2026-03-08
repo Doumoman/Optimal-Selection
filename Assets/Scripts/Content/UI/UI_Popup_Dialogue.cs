@@ -24,7 +24,7 @@ public class UI_Popup_Dialogue : UI_Popup
     {
         { "Stapi", "스타피" },
         { "Player", "주인공" },
-        { "Mom", "엄마" },
+        { "Letter", "엄마의 편지" },
         // 계속 추가..
     };
 
@@ -68,10 +68,10 @@ public class UI_Popup_Dialogue : UI_Popup
                 nameText.text = data.Speaker;
         }
 
-        // 2. 초상화(Portrait) 설정
+        // 초상화(Portrait) 설정
         if (!string.IsNullOrEmpty(data.PortraitName))
         {
-            Sprite loadedSprite = Managers.Resource.Load<Sprite>($"Portraits/{data.PortraitName}");
+            Sprite loadedSprite = Managers.Resource.Load<Sprite>($"Portraits/{data.PortraitName}"); // Resources/Portraits/{이름}
             if (loadedSprite != null)
             {
                 portraitImage.sprite = loadedSprite;
@@ -96,6 +96,9 @@ public class UI_Popup_Dialogue : UI_Popup
         _typingCoroutine = StartCoroutine(TypingEffect(data.DialogueText));
     }
 
+    /// <summary>
+    /// 상호작용, 엔터키를 한번 더 눌러 타이핑을 스킵
+    /// </summary>
     private void SkipCurrentDialogue()
     {
         if (_currentDialogueData == null) return;

@@ -12,6 +12,8 @@ public class DialogueManager : IManager
     // 현재 진행 중인 대화 데이터와 열려있는 팝업 UI 참조
     private DialogueData _currentDialogue;
     private UI_Popup_Dialogue _currentPopup;
+    private Action<string> _onDialogueEndCallBack;
+    private string _initialStartID;
 
     public event Action<string> OnDialogueEvent; // 이벤트의 이름을 넘겨준다
     public event Action OnDialogueEnd;
@@ -25,6 +27,7 @@ public class DialogueManager : IManager
         public string DialogueText;
         public string PortraitName;
         public string NextID;
+        public string NextStartID;
         public string EventName;
 
         // 다회차, 엔딩 분기를 위한 데이터
@@ -36,9 +39,6 @@ public class DialogueManager : IManager
     {
         if (_init) return;
         _init = true;
-
-        // 초기화 시 기본 CSV 데이터를 로드합니다.
-        LoadDialogueData("Basic_Dialogue");
     }
 
     public void LoadDialogueData(string csvFileName)
@@ -62,7 +62,9 @@ public class DialogueManager : IManager
             data.DialogueText = row.ContainsKey("Dialogue") ? row["Dialogue"].ToString() : "";
             data.PortraitName = row.ContainsKey("Portrait") ? row["Portrait"].ToString() : "";
             data.NextID = row.ContainsKey("NextID") ? row["NextID"].ToString() : "";
+            data.NextStartID = row.ContainsKey("NextStartID") ? row["NextStartID"].ToString() : "";
             data.EventName = row.ContainsKey("EventName") ? row["EventName"].ToString() : "";
+
             data.RequiredEnding = row.ContainsKey("RequiredEnding") ? row["RequiredEnding"].ToString() : "";
             data.FailID = row.ContainsKey("FailID") ? row["FailID"].ToString() : "";
 
@@ -106,7 +108,7 @@ public class DialogueManager : IManager
     {
         string currentID = startID;
 
-        // 조건에 맞는 대화를 찾을 때까지 FailID를 타고 계속 검색합니다.
+        // 조건에 맞는 대화를 찾을 때까지 FailID를 타고 계속 검색
         while (!string.IsNullOrEmpty(currentID) && _dialogueDB.ContainsKey(currentID))
         {
             DialogueData data = _dialogueDB[currentID];
@@ -132,13 +134,27 @@ public class DialogueManager : IManager
         return false;
     }
 
-    public void StartDialogue(string startID)
+    public void StartDialogue(string startID, Action<string> onDialogueEnd = null)
     {
-        _currentDialogue = GetValidDialogue(startID);
+        _onDialogueEndCallBack = onDialogueEnd;
+        _initialStartID = startID;
+
+        string targetID = startID;
+
+        if (OnBranchDecide != null) // 분기가 있을 때
+        {
+            string branchedID = OnBranchDecide.Invoke(startID);
+            if (!string.IsNullOrEmpty(branchedID))
+            {
+                targetID = branchedID; // 대화 시작용 더미 아이디를 실제 CSV 파일에 존재하는 아이디로 변경
+            }
+        }
+
+        _currentDialogue = GetValidDialogue(targetID);
 
         if (_currentDialogue == null)
         {
-            Debug.LogWarning($"[DialogueManager] 유효한 대화 ID를 찾을 수 없거나 조건에 맞는 대화가 없습니다: {startID}");
+            Debug.LogWarning($"[DialogueManager] 유효한 대화 ID를 찾을 수 없습니다. 요청ID: {startID}, 변환된ID: {targetID}");
             return;
         }
 
@@ -213,6 +229,15 @@ public class DialogueManager : IManager
             _currentPopup = null;
         }
 
+        string idToSave = _initialStartID;
+
+        if(_currentDialogue != null && !String.IsNullOrEmpty(_currentDialogue.NextStartID))
+        {
+            idToSave = _currentDialogue.NextStartID;
+        }
+
+        _onDialogueEndCallBack?.Invoke(idToSave);
+
         _currentDialogue = null;
         OnDialogueEnd?.Invoke();
         ClearEvents();
@@ -222,7 +247,8 @@ public class DialogueManager : IManager
     {
         OnDialogueEvent = null;
         OnDialogueEnd = null;
-        OnBranchDecide = null;
+
+        // OnBranchDecide는 일회성 이벤트가 아님
     }
 
     public void Clear()

@@ -31,6 +31,14 @@ public class NPCController : MonoBehaviour
     }
 
     /// <summary>
+    /// NPC의 대화 시작 ID를 설정해주는 함수
+    /// </summary>
+    public void SetStartDialogueID()
+    {
+
+    }
+
+    /// <summary>
     /// 플레이어가 상호작용을 시도했을 때 실행되는 로직
     /// </summary>
     public void Interact()
@@ -42,7 +50,12 @@ public class NPCController : MonoBehaviour
 
         if (!string.IsNullOrEmpty(startDialogueID))
         {
-            // Managers.Dialogue.StartDialogue(startDialogueID);
+            Managers.Dialogue.StartDialogue(startDialogueID, (nextID) =>
+            {
+                startDialogueID = nextID;
+                Debug.Log($"다음 ID 갱신: {startDialogueID}");
+            });
+
             Managers.Dialogue.OnDialogueEnd += HandleDialogueEnd;
         }
         else
