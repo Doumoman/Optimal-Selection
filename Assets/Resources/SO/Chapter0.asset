@@ -17,4 +17,6 @@ MonoBehaviour:
   chapterName: 
   sceneName: 
   startMapCoords: {x: 0, y: 0}
-  mapNodes: []
+  mapNodes:
+  - coordinates: {x: 0, y: 0}
+    mapData: {fileID: 0}

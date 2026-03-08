@@ -16,7 +16,12 @@ MonoBehaviour:
   mapStringID: 
   mapName: 
   mapPrefab: {fileID: 0}
-  itemSpawns: []
-  objectSpawns: []
+  itemSpawns:
+  - ItemID: 0
+    ItemStringID: 
+    prefab: {fileID: 0}
+    count: 0
+    position: {x: 0, y: 0, z: 0}
+  interactableSpawns: []
   bgm: {fileID: 0}
   cameraSize: 5
