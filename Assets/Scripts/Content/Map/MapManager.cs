@@ -15,7 +15,7 @@ public class MapManager : IManager
 
     public void Clear()
     {
-        throw new System.NotImplementedException();
+
     }
 
     public void OnDestroy()

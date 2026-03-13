@@ -31,14 +31,6 @@ public class NPCController : MonoBehaviour
     }
 
     /// <summary>
-    /// NPC의 대화 시작 ID를 설정해주는 함수
-    /// </summary>
-    public void SetStartDialogueID()
-    {
-
-    }
-
-    /// <summary>
     /// 플레이어가 상호작용을 시도했을 때 실행되는 로직
     /// </summary>
     public void Interact()
@@ -69,14 +61,13 @@ public class NPCController : MonoBehaviour
     /// </summary>
     private void HandleDialogueEnd()
     {
-        
         if (!string.IsNullOrEmpty(startDialogueID))
         {
             Managers.Dialogue.OnDialogueEnd -= HandleDialogueEnd;
         }
 
         OnDialogueEndEvent?.Invoke();
-        Managers.Input.SetInputModeUI(false);// 대화 빠르게 스킵 기능을 넣기 위해
+        Managers.Input.SetInputModeUI(false);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

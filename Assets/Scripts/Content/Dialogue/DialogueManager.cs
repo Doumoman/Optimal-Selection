@@ -236,7 +236,7 @@ public class DialogueManager : IManager
             idToSave = _currentDialogue.NextStartID;
         }
 
-        _onDialogueEndCallBack?.Invoke(idToSave);
+        _onDialogueEndCallBack?.Invoke(idToSave); // 다음 시작 아이디 갱신
 
         _currentDialogue = null;
         OnDialogueEnd?.Invoke();
