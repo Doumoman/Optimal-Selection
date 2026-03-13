@@ -24,6 +24,8 @@ public class EnemyAttackState : BattleStateBase
             return;
         }
 
+        Debug.Log($"[EnemyAttackState] flow={flow.name}, startNodeId={flow.startNodeId}, nodeCount={(flow.nodes != null ? flow.nodes.Count : 0)}");
+
         if (flow.nodes == null || flow.nodes.Count == 0)
         {
             Debug.LogError($"[EnemyAttackState] flow.nodes가 비어 있습니다. flow={flow.name}");
@@ -55,6 +57,7 @@ public class EnemyAttackState : BattleStateBase
             }
 
             _nodes.Add(node.id, node);
+            Debug.Log($"[EnemyAttackState] 노드 등록: id={node.id}, type={node.nodeType}, next={node.nextId}");
         }
 
         if (!_nodes.TryGetValue(flow.startNodeId, out _currentNode))
@@ -64,6 +67,7 @@ public class EnemyAttackState : BattleStateBase
             return;
         }
 
+        Debug.Log($"[EnemyAttackState] 시작 노드 진입: id={_currentNode.id}, type={_currentNode.nodeType}");
         ExecuteNode(context);
     }
 
@@ -75,17 +79,31 @@ public class EnemyAttackState : BattleStateBase
         if (_currentNode.nodeType == BattleFlowNodeType.Wait)
         {
             _timer += Time.deltaTime;
+            Debug.Log($"[EnemyAttackState] Wait 진행중: node={_currentNode.id}, timer={_timer:F2}/{_currentNode.waitTime:F2}");
 
             if (_timer >= _currentNode.waitTime)
+            {
+                Debug.Log($"[EnemyAttackState] Wait 종료 -> next={_currentNode.nextId}");
                 MoveNext(context, _currentNode.nextId);
+            }
         }
     }
 
-    void ExecuteNode(BattleContext context)
+    private void ExecuteNode(BattleContext context)
     {
+        if (_currentNode == null)
+        {
+            Debug.LogError("[EnemyAttackState] ExecuteNode 호출 시 _currentNode가 null입니다.");
+            ChangeState(context, BattleStateType.TurnEnd);
+            return;
+        }
+
+        Debug.Log($"[EnemyAttackState] ExecuteNode: id={_currentNode.id}, type={_currentNode.nodeType}, next={_currentNode.nextId}");
+
         switch (_currentNode.nodeType)
         {
             case BattleFlowNodeType.EnemyDialogue:
+                Debug.Log($"[EnemyAttackState] EnemyDialogue 실행: key={_currentNode.dialogueKey}");
                 context.Manager.ShowEnemySpeechByKey(
                     _currentNode.dialogueKey,
                     () => MoveNext(context, _currentNode.nextId)
@@ -93,9 +111,17 @@ public class EnemyAttackState : BattleStateBase
                 break;
 
             case BattleFlowNodeType.Pattern:
+                Debug.Log($"[EnemyAttackState] Pattern 실행: pattern={(_currentNode.pattern != null ? _currentNode.pattern.name : "NULL")}");
                 if (context.PatternRunner == null)
                 {
                     Debug.LogWarning("[EnemyAttackState] PatternRunner가 없습니다.");
+                    MoveNext(context, _currentNode.nextId);
+                    return;
+                }
+
+                if (_currentNode.pattern == null)
+                {
+                    Debug.LogWarning($"[EnemyAttackState] Pattern 노드인데 pattern이 비어 있습니다. nodeId={_currentNode.id}");
                     MoveNext(context, _currentNode.nextId);
                     return;
                 }
@@ -107,6 +133,7 @@ public class EnemyAttackState : BattleStateBase
                 break;
 
             case BattleFlowNodeType.SystemDialogue:
+                Debug.Log($"[EnemyAttackState] SystemDialogue 실행: key={_currentNode.dialogueKey}");
                 context.Manager.ShowSystemDialogue(
                     _currentNode.dialogueKey,
                     (_) => MoveNext(context, _currentNode.nextId)
@@ -114,28 +141,33 @@ public class EnemyAttackState : BattleStateBase
                 break;
 
             case BattleFlowNodeType.ConditionBranch:
+                Debug.Log($"[EnemyAttackState] ConditionBranch 실행");
                 HandleBranch(context);
                 break;
 
             case BattleFlowNodeType.Wait:
+                Debug.Log($"[EnemyAttackState] Wait 시작: {_currentNode.waitTime}초");
                 _timer = 0f;
                 break;
 
             case BattleFlowNodeType.Event:
-                Debug.Log($"[EnemyAttackState] Event Node: {_currentNode.eventKey}");
-                MoveNext(context, _currentNode.nextId);
-                break;
-
+                Debug.Log($"[EnemyAttackState] Event 실행: {_currentNode.eventKey}");
                 MoveNext(context, _currentNode.nextId);
                 break;
 
             case BattleFlowNodeType.EndTurn:
+                Debug.Log("[EnemyAttackState] EndTurn 실행");
+                ChangeState(context, BattleStateType.TurnEnd);
+                break;
+
+            default:
+                Debug.LogWarning($"[EnemyAttackState] 처리되지 않은 노드 타입: {_currentNode.nodeType}");
                 ChangeState(context, BattleStateType.TurnEnd);
                 break;
         }
     }
 
-    void HandleBranch(BattleContext context)
+    private void HandleBranch(BattleContext context)
     {
         bool result = false;
 
@@ -159,14 +191,17 @@ public class EnemyAttackState : BattleStateBase
         }
 
         string next = result ? _currentNode.trueNextId : _currentNode.falseNextId;
-
+        Debug.Log($"[EnemyAttackState] 분기 결과={result}, next={next}");
         MoveNext(context, next);
     }
 
-    void MoveNext(BattleContext context, string nextId)
+    private void MoveNext(BattleContext context, string nextId)
     {
+        Debug.Log($"[EnemyAttackState] MoveNext 호출: nextId={nextId}");
+
         if (string.IsNullOrEmpty(nextId))
         {
+            Debug.Log("[EnemyAttackState] nextId 비어 있음 -> TurnEnd");
             ChangeState(context, BattleStateType.TurnEnd);
             return;
         }
@@ -178,14 +213,17 @@ public class EnemyAttackState : BattleStateBase
             return;
         }
 
+        Debug.Log($"[EnemyAttackState] 다음 노드 진입: id={_currentNode.id}, type={_currentNode.nodeType}");
         ExecuteNode(context);
     }
+
     public override void Exit(BattleContext context)
     {
         Debug.Log("[EnemyAttackState] 적 공격 종료");
 
         _nodes = null;
         _currentNode = null;
+        _timer = 0f;
 
         base.Exit(context);
     }

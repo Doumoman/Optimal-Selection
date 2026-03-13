@@ -71,20 +71,42 @@ public class BattleManager : IManager
             return;
         }
 
+        EnemyBattleSO enemyData = LoadEnemyBattleData(request.enemyId);
+        if (enemyData == null)
+        {
+            Debug.LogError($"[BattleManager] 적 전투 데이터를 찾을 수 없습니다. enemyId={request.enemyId}");
+            return;
+        }
+
+        if (enemyData.defaultFlow == null)
+        {
+            Debug.LogError($"[BattleManager] EnemyBattleSO의 defaultFlow가 비어 있습니다. enemyId={request.enemyId}");
+            return;
+        }
+
+        if (enemyData.battlePrefab == null)
+        {
+            Debug.LogWarning($"[BattleManager] EnemyBattleSO의 battlePrefab이 비어 있습니다. enemyId={request.enemyId}");
+        }
+
+        if (string.IsNullOrEmpty(enemyData.defaultFlow.startNodeId))
+        {
+            Debug.LogError($"[BattleManager] defaultFlow의 startNodeId가 비어 있습니다. flow={enemyData.defaultFlow.name}");
+            return;
+        }
+
         IsBattleRunning = true;
 
         Context.Init(this, request);
         Context.SceneRefs = _sceneRefs;
         Context.PatternRunner = _sceneRefs.patternRunner;
 
-        Context.CurrentFlow = LoadBattleFlow(request.flowId);
+        Context.EnemyMaxHP = enemyData.maxHP;
+        Context.EnemyCurrentHP = enemyData.maxHP;
+        Context.CurrentFlow = enemyData.defaultFlow;
 
-        if (Context.CurrentFlow == null)
-        {
-            Debug.LogError($"[BattleManager] 시작 플로우를 찾을 수 없습니다. flowId={request.flowId}");
-            IsBattleRunning = false;
-            return;
-        }
+        PrepareWorldForBattle(request);
+        SetupBattlePresentation(enemyData);
 
         if (_sceneRefs.battleRoot != null)
             _sceneRefs.battleRoot.SetActive(true);
@@ -92,16 +114,47 @@ public class BattleManager : IManager
         if (_sceneRefs.battleUIRoot != null)
             _sceneRefs.battleUIRoot.SetActive(true);
 
+        Debug.Log($"[BattleManager] 전투 시작 enemyId={request.enemyId}, flow={enemyData.defaultFlow.name}, startNodeId={enemyData.defaultFlow.startNodeId}");
+
         ChangeState(BattleStateType.PlayerChoice);
     }
-
-    private BattleFlowSO LoadBattleFlow(string flowId)
+    private void SetupBattlePresentation(EnemyBattleSO enemyData)
     {
-        if (string.IsNullOrEmpty(flowId))
+        if (_sceneRefs.battleRoot != null)
+            _sceneRefs.battleRoot.SetActive(true);
+
+        if (_sceneRefs.battleUIRoot != null)
+            _sceneRefs.battleUIRoot.SetActive(true);
+
+        if (_sceneRefs.battleFieldView != null)
+        {
+            _sceneRefs.battleFieldView.Show();
+
+            if (enemyData.battlePrefab != null)
+                _sceneRefs.battleFieldView.SpawnEnemy(enemyData.battlePrefab);
+
+            GameObject soulPrefab = LoadDefaultSoulPrefab();
+            if (soulPrefab != null)
+                _sceneRefs.battleFieldView.SpawnSoul(soulPrefab);
+            else
+                Debug.LogWarning("[BattleManager] 기본 소울 프리팹을 찾지 못했습니다.");
+        }
+    }
+
+    private EnemyBattleSO LoadEnemyBattleData(string enemyId)
+    {
+        if (string.IsNullOrEmpty(enemyId))
             return null;
 
-        // 예시 경로: Resources/Battle/Flow/{flowId}
-        return Managers.Resource.Load<BattleFlowSO>($"Battle/Flow/{flowId}");
+        // Resources/Battle/Data/Enemy1.asset 형태를 가정
+        // 여기 안에 SO를 넣고 데이터를 받아주면 된다.
+        return Managers.Resource.Load<EnemyBattleSO>($"Battle/Enemy/{enemyId}");
+    }
+
+
+    private GameObject LoadDefaultSoulPrefab()
+    {
+        return Managers.Resource.Load<GameObject>("Battle/Player/PlayerSoul");
     }
 
     public void ChangeState(BattleStateType nextStateType)
@@ -177,6 +230,9 @@ public class BattleManager : IManager
         {
             if (_sceneRefs.enemySpeechUI != null)
                 _sceneRefs.enemySpeechUI.HideImmediate();
+
+            if (_sceneRefs.battleFieldView != null)
+                _sceneRefs.battleFieldView.Hide();
 
             if (_sceneRefs.battleUIRoot != null)
                 _sceneRefs.battleUIRoot.SetActive(false);

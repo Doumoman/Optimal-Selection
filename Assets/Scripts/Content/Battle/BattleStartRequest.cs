@@ -5,8 +5,6 @@ public class BattleStartRequest
 {
     public string battleId;
     public string enemyId;
-    public string flowId;
-
     public GameObject enemyWorldObject;
 
     public bool lockWorldInput = true;

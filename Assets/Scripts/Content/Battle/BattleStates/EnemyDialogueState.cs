@@ -6,12 +6,7 @@ public class EnemyDialogueState : BattleStateBase
 
     public override void Enter(BattleContext context)
     {
-        base.Enter(context);
-
-        string key = $"Turn_{context.TurnIndex + 1:00}";
-        context.Manager.ShowEnemySpeechByKey(key, () =>
-        {
-            context.Manager.ChangeState(BattleStateType.EnemyAttack);
-        });
+        // 쓸모없는 상태인듯...EnemyDialogue 상태 그냥 지울까 생각중
+        context.Manager.ChangeState(BattleStateType.EnemyAttack);
     }
 }

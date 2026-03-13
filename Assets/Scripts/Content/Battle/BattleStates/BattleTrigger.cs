@@ -4,7 +4,6 @@ public class BattleTrigger : MonoBehaviour
 {
     [SerializeField] private string battleId;
     [SerializeField] private string enemyId;
-    [SerializeField] private string flowId;
 
     private bool _triggered;
 

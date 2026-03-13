@@ -6,5 +6,6 @@
     ConditionBranch,
     Event,
     Wait,
+    RunSubFlow,
     EndTurn
 }

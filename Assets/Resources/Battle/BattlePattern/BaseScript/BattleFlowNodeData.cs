@@ -4,8 +4,9 @@ using UnityEngine;
 [Serializable]
 public class BattleFlowNodeData
 {
-    public string id;
     public BattleFlowNodeType nodeType;
+    public BattleFlowSO subFlow;
+    public string id;
     public string nextId;
 
     public string dialogueKey;
