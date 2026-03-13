@@ -3,9 +3,7 @@
 [System.Serializable]
 public class InteractableSpawnData
 {
-    public int objectID; // 고유 ID
-    public string objectStringID; // 고유 문자열 ID
-
+    public int uniqueID; // 고유 ID
     public GameObject prefab; // 생성 프리팹
-    public Vector3 position; // 스폰 위치
+    public Vector2 position; // 스폰 위치
 }

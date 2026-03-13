@@ -7,12 +7,17 @@ public abstract class ChapterManager : MonoBehaviour
     [Header("Chapter Settings")]
     public string chapterCSVFileName;
 
+    [Header("Current Chapter Info")]
+    public ChapterDataSO currentChapterData;
+    public ChapterState currentChapterState;
+
     protected Dictionary<string, Func<string>> _branchRouters = new Dictionary<string, Func<string>>();
 
     private void Start()
     {
         InitChapterDialogue();
         RegisterChapterBranches();
+
         Managers.Dialogue.OnBranchDecide += HandleChapterBranch;
     }
 
@@ -35,6 +40,26 @@ public abstract class ChapterManager : MonoBehaviour
             return checkFunc.Invoke();
         }
         return null;
+    }
+
+    public MapDataSO GetMapData(Vector2Int coords)
+    {
+        if (currentChapterData == null) return null;
+
+        foreach (var node in currentChapterData.mapNodes)
+        {
+            if (node.coordinates == coords) return node.mapData;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 시작 맵 데이터 바로 가져오기
+    /// </summary>
+    public MapDataSO GetStartMapData()
+    {
+        if (currentChapterData == null) return null;
+        return GetMapData(currentChapterData.startMapCoords);
     }
 
 }

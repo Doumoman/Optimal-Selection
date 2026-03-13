@@ -19,22 +19,6 @@ public class ChapterDataSO : ScriptableObject
     [Header("Map Structure")]
     // 이 챕터에 포함된 모든 맵 리스트 (좌표 <-> 맵 데이터)
     public List<ChapterMapNode> mapNodes = new List<ChapterMapNode>();
-
-    // 좌표로 맵 데이터 찾기
-    public MapDataSO GetMapData(Vector2Int coords)
-    {
-        foreach (var node in mapNodes)
-        {
-            if (node.coordinates == coords) return node.mapData;
-        }
-        return null;
-    }
-
-    // 시작 맵 데이터 바로 가져오기
-    public MapDataSO GetStartMapData()
-    {
-        return GetMapData(startMapCoords);
-    }
 }
 
 // 각 맵의 주소를 좌표로 표현

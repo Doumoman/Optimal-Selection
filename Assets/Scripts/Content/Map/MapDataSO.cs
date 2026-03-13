@@ -22,7 +22,9 @@ public class MapDataSO : ScriptableObject
     [Tooltip("상자, 레버, 문 등 상호작용 오브젝트 배치")]
     public List<InteractableSpawnData> interactableSpawns = new List<InteractableSpawnData>();
 
+    [Tooltip("맵에 배치될 몬스터들")]
+    // public List<MonsterSpawnData> monsterSpawns = new List<MonsterSpawnData>();
+
     [Header("Settings")]
     public AudioClip bgm;           // 이 맵의 BGM
-    public float cameraSize = 5f;   // 카메라 사이즈 (줌인, 줌아웃에 사용)
 }

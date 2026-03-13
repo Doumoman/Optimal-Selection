@@ -3,10 +3,8 @@
 [System.Serializable]
 public class ItemSpawnData
 {
-    public int ItemID; // 고유 ID
-    public string ItemStringID; // 고유 문자열 ID
-
-    public GameObject prefab; // 생성 프리팹
-    public int count = 1; // 아이템 개수
-    public Vector3 position; // 스폰 위치
+    public int uniqueID; // 맵 내에서 아이템을 식별하기 위한 고유 배치 ID
+    public ItemDataSO itemData; // 아이템 데이터 원본
+    public int count = 1;
+    public Vector2 spawnPosition; // 맵 내 스폰 위치(로컬)
 }

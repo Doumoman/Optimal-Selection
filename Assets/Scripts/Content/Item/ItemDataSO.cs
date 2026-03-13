@@ -8,6 +8,8 @@ public class ItemDataSO : ScriptableObject
     public string itemName;     // 이름
     public Sprite icon;         // 아이콘 이미지
 
+    public GameObject dropPrefab;
+
     [TextArea]
     public string description;  // 아이템 설명
 
