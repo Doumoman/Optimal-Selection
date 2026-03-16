@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 
 public class DataManager : IManager
@@ -11,10 +11,8 @@ public class DataManager : IManager
     // 인게임에서 실시간으로 읽고 쓸 데이터 원본
     public GameData CurrentData { get; private set; }
 
-    public static event Action<int> OnGoldChanged;
-    public static event Action<int> OnHealthChanged;
-    public static event Action<int> OnMaliceChanged;
-    public static event Action<int> OnLevelChanged;
+    // 검색 속도를 위해 List를 Dictionary로 미리 캐싱
+    private Dictionary<int, ChapterState> _chapterStateDict = new Dictionary<int, ChapterState>();
 
     public void Init()
     {
@@ -60,100 +58,33 @@ public class DataManager : IManager
             CurrentData = new GameData();
             Debug.Log("[DataManager] 세이브 파일이 없습니다. 새 게임 데이터를 생성했습니다.");
         }
+
+        // 동적 챕터 상태 List -> Dictionary
+        _chapterStateDict.Clear();
+        foreach(var chapter in CurrentData.chapterStates)
+        {
+            if (!_chapterStateDict.ContainsKey(chapter.chapterID))
+            {
+                _chapterStateDict.Add(chapter.chapterID, chapter);
+            }
+
+        }
     }
-
-    #region 데이터 헬퍼 함수 (Player Data)
-
-    // 골드 획득 및 사용
-    public void UpdateGold(int amount)
-    {
-        CurrentData.playerGold += amount;
-        if (CurrentData.playerGold < 0) CurrentData.playerGold = 0;
-        OnGoldChanged?.Invoke(CurrentData.playerGold);
-    }
-
-    // 체력 증감
-    public void UpdateHealth(int amount)
-    {
-        CurrentData.playerHealth += amount;
-        if (CurrentData.playerHealth < 0) CurrentData.playerHealth = 0;
-        OnHealthChanged?.Invoke(CurrentData.playerHealth);
-    }
-
-    // 악의 증감
-    public void UpdateMalice(int amount)
-    {
-        CurrentData.playerMalice += amount;
-        OnMaliceChanged?.Invoke(CurrentData.playerMalice);
-    }
-
-    // 레벨 업
-    public void UpdateLevel(int level)
-    {
-        CurrentData.playerLevel = level;
-        if (CurrentData.playerHealth < 0) CurrentData.playerLevel = 1;
-        OnLevelChanged?.Invoke(CurrentData.playerLevel);
-        // 레벨업 -> 최대 HP, 악의 등등 조정?
-    }
-
-    #endregion
-
-    #region 데이터 헬퍼 함수 (Inventory)
-
-    // 아이템 획득 로직
-    public void AddInventoryItem(int itemId, string itemStringId, int count)
-    {
-
-    }
-
-    // 아이템 사용/버리기 로직 (true 반환 시 성공적으로 소모됨)
-    public bool RemoveInventoryItem(int itemId, string itemStringId, int amount)
-    {
-        return true;
-    }
-
-    #endregion
 
     #region 데이터 헬퍼 함수 (Events & World State)
 
-    public void UpdateMonsterKill()
+    /// <summary>
+    /// 특정 챕터의 동적 데이터를 가져옵니다.
+    /// </summary>
+    public ChapterState GetOrCreateChapterState(int chapterId)
     {
-        CurrentData.monstersKilled++;
-    }
-
-    public void UpdateClearChapter(int chapterNum)
-    {
-        if (!CurrentData.clearedChapters.Contains(chapterNum))
-            CurrentData.clearedChapters.Add(chapterNum);
-        // 특정 이벤트 발동 조건을 체크할 때 사용 (ex. 불살 루트, 몰살 루트..)
-    }
-
-    public void UpdateKillMainNPC(string npcId)
-    {
-        if (!CurrentData.killedMainNPCIds.Contains(npcId))
-            CurrentData.killedMainNPCIds.Add(npcId);
-        // 특정 이벤트 발동 조건을 체크할 때 사용 (ex. 몰살 루트..)
-    }
-
-    public void UpdateInteractedObject(string objectId)
-    {
-        if (!CurrentData.interactedObjectIDs.Contains(objectId))
-            CurrentData.interactedObjectIDs.Add(objectId);
-        // 맵 로드 될 때 오브젝트 상호작용 여부 결정 (ex. 이미 열었던 문은 계속 열려있음..)
-    }
-
-    public void UpdateLootedItem(string itemId)
-    {
-        if (!CurrentData.lootedItemIDs.Contains(itemId))
-            CurrentData.lootedItemIDs.Add(itemId);
-        // 드랍되어 있는 아이템 획득 했을 때
-    }
-
-    public void UpdateUnlockMap(string mapId)
-    {
-        if (!CurrentData.unlockedMapIds.Contains(mapId))
-            CurrentData.unlockedMapIds.Add(mapId);
-        // 맵 창? 열었을 때 해금된 맵 업데이트
+        if (!_chapterStateDict.TryGetValue(chapterId, out ChapterState state))
+        {
+            state = new ChapterState(chapterId);
+            _chapterStateDict.Add(chapterId, state);
+            Debug.Log($"[DataManager] 챕터 {chapterId}의 새로운 세이브 데이터를 생성합니다.");
+        }
+        return state;
     }
 
     #endregion
@@ -165,11 +96,6 @@ public class DataManager : IManager
 
     public void OnDestroy()
     {
-        // 게임이 꺼지거나 매니저가 파괴될 때 안전하게 마지막 상태 자동 저장
-        if (CurrentData != null)
-        {
-            SaveGame();
-        }
         _init = false;
     }
 }
