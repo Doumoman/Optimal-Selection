@@ -18,7 +18,7 @@ public class ChapterDataSO : ScriptableObject
 
     [Header("Map Structure")]
     // 이 챕터에 포함된 모든 맵 리스트 (좌표 <-> 맵 데이터)
-    public List<ChapterMapNode> mapNodes = new List<ChapterMapNode>();
+    public List<ChapterMapNode> chapterMapNodes = new List<ChapterMapNode>();
 }
 
 // 각 맵의 주소를 좌표로 표현
