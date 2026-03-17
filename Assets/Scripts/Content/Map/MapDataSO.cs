@@ -12,9 +12,6 @@ public class MapDataSO : ScriptableObject
     public string mapStringID;      // 맵 고유 문자열 ID
     public string mapName;          // 맵 이름
 
-    [Header("Visuals")]
-    public GameObject mapPrefab;    // 실제 생성될 맵 프리팹
-
     [Header("Initial Spawns")]
     [Tooltip("바닥에 떨어져 있는 아이템 배치")]
     public List<ItemSpawnData> itemSpawns = new List<ItemSpawnData>();

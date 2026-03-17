@@ -55,9 +55,9 @@ public class ChapterState : ISerializationCallbackReceiver
     /// <summary>
     /// 챕터 내에 있는 맵의 동적 상태를 가져옴
     /// </summary>
-    public MapState GetOrCreateMapState(int chapterId, int mapId)
+    public MapState GetOrCreateMapState(int mapId)
     {
-        if(!chapterMapStates.TryGetValue(chapterId, out MapState mapState))
+        if(!chapterMapStates.TryGetValue(mapId, out MapState mapState))
         {
             mapState = new MapState(mapId);
             chapterMapStates.Add(mapId, mapState);

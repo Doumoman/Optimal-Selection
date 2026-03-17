@@ -15,11 +15,6 @@ MonoBehaviour:
   mapID: 5
   mapStringID: Chapter0_Observatory_1stFloor
   mapName: Chapter0_Observatory_1stFloor
-  mapPrefab: {fileID: 0}
-  itemSpawns:
-  - uniqueID: 0
-    itemData: {fileID: 0}
-    count: 0
-    spawnPosition: {x: 0, y: 0}
+  itemSpawns: []
   interactableSpawns: []
   bgm: {fileID: 0}

@@ -15,7 +15,7 @@ MonoBehaviour:
   mapID: 2
   mapStringID: Chapter0_Observatory_MiddleFloor1
   mapName: Chapter0_Observatory_MiddleFloor1
-  mapPrefab: {fileID: 0}
+  mapPrefab: {fileID: 5586830993596734552, guid: 716efb2ce147cf747985accfaec784b0, type: 3}
   itemSpawns: []
   interactableSpawns: []
   bgm: {fileID: 0}
