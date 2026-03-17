@@ -55,7 +55,7 @@ public class DataManager : IManager
         }
         else
         {
-            CurrentData = new GameData();
+            CreateNewGameData();
             Debug.Log("[DataManager] 세이브 파일이 없습니다. 새 게임 데이터를 생성했습니다.");
         }
 
@@ -69,6 +69,15 @@ public class DataManager : IManager
             }
 
         }
+    }
+
+    public void CreateNewGameData()
+    {
+        CurrentData = new GameData();
+        _chapterStateDict.Clear();
+        SaveGame();
+
+        Debug.Log("[DataManager] 새 게임 데이터 초기화 완료!");
     }
 
     #region 데이터 헬퍼 함수 (Events & World State)

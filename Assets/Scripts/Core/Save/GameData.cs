@@ -7,10 +7,10 @@ public class GameData
     #region 플레이어 저장 요소
 
     public int currentChapterID = 0; // 현재 챕터 ID
-    public string currenChapterStringID = string.Empty; // 현재 챕터 문자열 ID
+    public string currenChapterStringID = "Chapter0"; // 현재 챕터 문자열 ID
 
     public int currentMapID = 1; // 맵 고유 ID
-    public string currentMapStringID = string.Empty; // 맵 고유 문자열 ID
+    public string currentMapStringID = "Chapter0_Observatory_5thFloor"; // 맵 고유 문자열 ID
     public Vector2 currentMapPosition = Vector2.zero; // 세이브 포인트 위치
 
     public float playTime = 0f; // 플레이 시간
