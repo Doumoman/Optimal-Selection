@@ -6,43 +6,37 @@ public class MapManager : IManager
 {
     private bool _init = false;
 
-    public GameObject CurrentMap {  get; private set; }
+    public GameObject CurrentMap { get; private set; }
     public MapState CurrentMapState { get; private set; }
-    public MapDataSO CurrentMapData { get; private set;}
+    public MapDataSO CurrentMapData { get; private set; }
 
     private Dictionary<int, GameObject> _mapDict = new Dictionary<int, GameObject>();
+
+    private ChapterSceneRefs _sceneRefs;
 
     public void Init()
     {
         if (_init) return;
         _init = true;
 
-        GameObject mapRoot = GameObject.Find("@MapRoot");
-        if (mapRoot == null)
+        _mapDict.Clear();
+    }
+
+    public void RegisterScene(ChapterSceneRefs refs)
+    {
+        _sceneRefs = refs;
+        _mapDict.Clear();
+
+        if (_sceneRefs.mapRoot == null) return;
+
+        // 에디터에서 맵을 꺼놔서 인식
+        MapController[] allMaps = _sceneRefs.mapRoot.GetComponentsInChildren<MapController>(true);
+
+        foreach (var map in allMaps)
         {
-            mapRoot = new GameObject("@MapRoot");
-        }
-
-        // 에디터에서 맵 오브젝트를 꺼놔도 인식
-        MapController[] allMapsInScene = Object.FindObjectsByType<MapController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-
-        foreach (MapController mapCtrl in allMapsInScene)
-        {
-            if (mapCtrl.mapData == null)
-            {
-                Debug.LogError($"[MapManager] {mapCtrl.gameObject.name}에 MapDataSO가 할당되지 않았습니다!");
-                continue;
-            }
-
-            GameObject mapObj = mapCtrl.gameObject;
-
-            if (mapObj.transform.parent != mapRoot.transform)
-            {
-                mapObj.transform.SetParent(mapRoot.transform, false);
-            }
-
-            RegisterMap(mapCtrl.mapData.mapID, mapObj);
-            mapObj.SetActive(false);
+            if (map.mapData == null) continue;
+            _mapDict[map.mapData.mapID] = map.gameObject;
+            map.gameObject.SetActive(false);
         }
     }
 
@@ -60,17 +54,19 @@ public class MapManager : IManager
     /// <summary>
     /// 맵 이동을 요청할때 호출하는 함수
     /// </summary>
-    public void TransitionMap(MapState nextMapState, MapDataSO nextMapData, float duration = 1.0f)
+    public void TransitionMap(MapState nextMapState, MapDataSO nextMapData,
+    MapPortal.PortalDirection entryDirection = MapPortal.PortalDirection.None, float duration = 1.0f)
     {
         if (nextMapData == null)
         {
             Debug.LogError("[MapManager] 다음 맵 데이터가 없어서 맵 이동에 실패했습니다");
             return;
         }
-        Managers.Instance.StartCoroutine(CoTransitionMap(nextMapState, nextMapData, duration));
+        Managers.Instance.StartCoroutine(CoTransitionMap(nextMapState, nextMapData, entryDirection, duration));
     }
 
-    public IEnumerator CoTransitionMap(MapState nextMapState, MapDataSO nextMapData, float duration = 1.0f)
+    public IEnumerator CoTransitionMap(MapState nextMapState, MapDataSO nextMapData,
+    MapPortal.PortalDirection entryDirection = MapPortal.PortalDirection.None, float duration = 1.0f)
     {
         // 이동 준비 (입력 차단, ...
         Managers.Input.SetInput(false);
@@ -97,12 +93,18 @@ public class MapManager : IManager
         {
             CurrentMap = nextMap;
             RestoreMapState(CurrentMapData); // 현재 맵 동적 상태 복구
+
             CurrentMap.SetActive(true);
+ 
+            TeleportPlayerToPortal(entryDirection); // 플레이어 순간이동
+            SnapCameraToPlayer(_sceneRefs.playerController.gameObject); // 카메라 순간이동
         }
         else
         {
             Debug.LogError($"[MapManager] 씬에 ID가 {CurrentMapData.mapID}인 맵이 배치되지 않았습니다!");
         }
+
+        yield return null;
 
         // 페이드 인 시작
         isFadeCompleted = false;
@@ -138,6 +140,55 @@ public class MapManager : IManager
 
         // 다른 초기 세팅들..
         // TODO: 플레이어 시작 위치, 카메라 위치 등등..
+    }
+
+
+    /// <summary>
+    /// 플레이어를 포탈 앞으로 텔레포트 시킴
+    /// </summary>
+    public void TeleportPlayerToPortal(MapPortal.PortalDirection entryDirection)
+    {
+        PlayerController player = _sceneRefs.playerController;
+        if (player == null)
+        {
+            Debug.LogWarning("[MapManager] 씬에 Player 태그를 가진 오브젝트가 없습니다!");
+            return;
+        }
+
+        // 포탈을 통한 이동이 아님, 세이브/로드 
+        if (entryDirection == MapPortal.PortalDirection.None)
+        {
+            player.transform.position = Managers.Data.CurrentData.currentMapPosition;
+            return;
+        }
+        else
+        {
+            // 포탈을 통한 이동
+            MapPortal[] portals = CurrentMap.GetComponentsInChildren<MapPortal>();
+            foreach (var portal in portals)
+            {
+                if (portal.direction == entryDirection)
+                {
+                    Vector2 portalWorldPosition = portal.transform.position;
+                    Vector2 spawnOffset = -portal.GetDirectionCoords() * 2;
+                    player.transform.position = portalWorldPosition + spawnOffset;
+                    return;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 카메라를 플레이어 위치로 즉시 이동
+    /// </summary>
+    private void SnapCameraToPlayer(GameObject player)
+    {
+        if (_sceneRefs.mainCamera != null)
+        {
+            Vector3 camPos = player.transform.position;
+            camPos.z = _sceneRefs.mainCamera.transform.position.z; // Z축 유지
+            _sceneRefs.mainCamera.transform.position = camPos;
+        }
     }
 
     public void Clear()

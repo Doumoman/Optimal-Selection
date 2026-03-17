@@ -20,11 +20,11 @@ MonoBehaviour:
   chapterMapNodes:
   - coordinates: {x: 0, y: 0}
     mapData: {fileID: 11400000, guid: b5e90c4ee3d1cb64dbef5c54aa6e29f4, type: 2}
-  - coordinates: {x: 1, y: 0}
+  - coordinates: {x: 0, y: -1}
     mapData: {fileID: 11400000, guid: ff645e6d0b257b340acc5ac7d97b659d, type: 2}
-  - coordinates: {x: 1, y: 1}
+  - coordinates: {x: 1, y: -1}
     mapData: {fileID: 11400000, guid: af3995833b0895c4185bba47587af2ab, type: 2}
-  - coordinates: {x: 1, y: 2}
+  - coordinates: {x: 2, y: -1}
     mapData: {fileID: 11400000, guid: ca64309d630a40347aa5069430cf4ae7, type: 2}
-  - coordinates: {x: 2, y: 2}
+  - coordinates: {x: 2, y: -2}
     mapData: {fileID: 11400000, guid: 2cc14905120358a418e7b33f6234310e, type: 2}

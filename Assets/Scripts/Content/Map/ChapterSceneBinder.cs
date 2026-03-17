@@ -7,10 +7,10 @@ public class ChapterSceneBinder : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private Transform chapterUIRoot;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] ChapterManager chapterManager;
+    [SerializeField] private ChapterManager chapterManager;
     
 
-    private void Awake()
+    private void Start()
     {
         Debug.Log("[ChapterSceneBinder] RegisterScene 호출");
         ChapterSceneRefs _chapterSceneRefs = new ChapterSceneRefs

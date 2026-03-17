@@ -23,21 +23,32 @@ public class MapPortal : MonoBehaviour
             var chapterManager = FindFirstObjectByType<ChapterManager>();
             if (chapterManager != null)
             {
-                chapterManager.MoveToDirection(moveDir, direction);
+                chapterManager.TeleportToNextMap(this);
             }
         }
     }
 
     public Vector2Int GetDirectionCoords()
     {
-        // 2차원 배열로 생각하면 될듯
         switch (direction)
         {
-            case PortalDirection.Left: return new Vector2Int(0, -1);
-            case PortalDirection.Right: return new Vector2Int(0, 1);
-            case PortalDirection.Up: return new Vector2Int(-1, 0);
-            case PortalDirection.Down: return new Vector2Int(1, 0);
+            case PortalDirection.Left: return Vector2Int.left;
+            case PortalDirection.Right: return Vector2Int.right;
+            case PortalDirection.Up: return Vector2Int.up;
+            case PortalDirection.Down: return Vector2Int.down;
             default: return Vector2Int.zero;
+        }
+    }
+
+    public PortalDirection GetOppositeDirection()
+    {
+        switch (direction)
+        {
+            case PortalDirection.Left: return PortalDirection.Right;
+            case PortalDirection.Right: return PortalDirection.Left;
+            case PortalDirection.Up: return PortalDirection.Down;
+            case PortalDirection.Down: return PortalDirection.Up;
+            default: return PortalDirection.None;
         }
     }
 }

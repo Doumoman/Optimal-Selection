@@ -14,6 +14,8 @@ public abstract class ChapterManager : MonoBehaviour
 
     protected Dictionary<string, Func<string>> _branchRouters = new Dictionary<string, Func<string>>();
 
+    private ChapterSceneRefs _sceneRefs;
+
     private void Start()
     {
         InitChapterDialogue();
@@ -24,6 +26,11 @@ public abstract class ChapterManager : MonoBehaviour
     }
 
     protected abstract void RegisterChapterBranches();
+
+    public void RegisterScene(ChapterSceneRefs refs)
+    {
+        _sceneRefs = refs;
+    }
 
     public void InitChapterMap()
     {
@@ -51,7 +58,7 @@ public abstract class ChapterManager : MonoBehaviour
         }
 
         // 시작 맵 동적 데이터 가져오기
-        MapState startMapState = currentChapterState.GetOrCreateMapState(currentChapterData.chapterID, startMapDataSO.mapID);
+        MapState startMapState = currentChapterState.GetOrCreateMapState(startMapDataSO.mapID);
 
         // 맵 이동 요청
         Managers.Map.TransitionMap(startMapState, startMapDataSO);
@@ -97,5 +104,26 @@ public abstract class ChapterManager : MonoBehaviour
     {
         if (currentChapterData == null) return null;
         return GetMapData(currentChapterData.startMapCoords);
+    }
+
+    /// <summary>
+    /// 논리적 좌표로 다음 맵으로 이동하기
+    /// </summary>
+    public void TeleportToNextMap(MapPortal portal)
+    {
+        Vector2Int nextCoords = CurrentCoords + portal.GetDirectionCoords();
+        MapDataSO nextMapData = GetMapData(nextCoords);
+
+        if (nextMapData == null)
+        {
+            Debug.LogWarning($"[ChapterManager] {nextCoords} 좌표에 맵이 없습니다!");
+            return;
+        }
+
+        // 좌표에 해당하는 맵이 존재하면
+        CurrentCoords = nextCoords;
+        MapState nextMapState = currentChapterState.GetOrCreateMapState(nextMapData.mapID);
+
+        Managers.Map.TransitionMap(nextMapState, nextMapData, portal.GetOppositeDirection());
     }
 }
