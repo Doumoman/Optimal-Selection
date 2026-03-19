@@ -1,53 +1,40 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Events; // UnityEvent 사용을 위해 추가
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Collider2D))]
 public class NPCController : MonoBehaviour
 {
     [Header("NPC Info")]
-    [Tooltip("이 NPC의 고유 이름 (디버깅/식별용)")]
     public string npcName = "Unknown NPC";
-
-    [Tooltip("상호작용 시 실행할 대화의 첫 ID (빈칸이면 대화를 실행하지 않음)")]
     public string startDialogueID = "";
 
     [Header("Special Events")]
-    [Tooltip("말을 걸었을 때 대화와 함께, 혹은 대화 대신 실행될 특수 이벤트")]
     public UnityEvent OnInteractEvent;
-
-    [Tooltip("대화가 완전히 종료된 직후에 실행될 특수 이벤트")]
     public UnityEvent OnDialogueEndEvent;
 
-    [Header("Interaction Settings")]
-    [Tooltip("플레이어가 상호작용 가능한 거리 내에 있는지 여부")]
     private bool _isPlayerInRange = false;
+    private bool _isInteracting = false;
 
     private void Awake()
     {
-        // 2D 충돌체 설정
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.isTrigger = true;
     }
 
-    /// <summary>
-    /// 플레이어가 상호작용을 시도했을 때 실행되는 로직
-    /// </summary>
     public void Interact()
     {
-        if (!_isPlayerInRange) return;
+        // 범위 밖이거나 이미 대화 중이면 무시
+        if (!_isPlayerInRange || _isInteracting) return;
 
-        Managers.Input.SetInputModeUI(true); // 대화 빠르게 스킵 기능을 넣기 위해
+        _isInteracting = true; // 대화 상태 진입
+
+        Managers.Input.SetInputModeUI(true);
         OnInteractEvent?.Invoke();
 
         if (!string.IsNullOrEmpty(startDialogueID))
         {
-            Managers.Dialogue.StartDialogue(startDialogueID, (nextID) =>
-            {
-                startDialogueID = nextID;
-                Debug.Log($"다음 ID 갱신: {startDialogueID}");
-            });
-
+            Managers.Dialogue.StartDialogue(startDialogueID);
             Managers.Dialogue.OnDialogueEnd += HandleDialogueEnd;
         }
         else
@@ -56,18 +43,15 @@ public class NPCController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 대화가 종료되었을 때 (또는 대화가 없는 경우 상호작용 직후) 호출됨
-    /// </summary>
     private void HandleDialogueEnd()
     {
-        if (!string.IsNullOrEmpty(startDialogueID))
-        {
-            Managers.Dialogue.OnDialogueEnd -= HandleDialogueEnd;
-        }
+        Managers.Dialogue.OnDialogueEnd -= HandleDialogueEnd;
 
         OnDialogueEndEvent?.Invoke();
+
         Managers.Input.SetInputModeUI(false);
+
+        _isInteracting = false; // 대화 상태 해제
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -87,15 +71,6 @@ public class NPCController : MonoBehaviour
             _isPlayerInRange = false;
             Managers.Input.OnInteractPressed -= Interact;
             Debug.Log($"[NPCController] {npcName}에게 상호작용 불가능");
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (_isPlayerInRange && Managers.Input != null)
-        {
-            Managers.Input.OnInteractPressed -= Interact;
-            _isPlayerInRange = false;
         }
     }
 }

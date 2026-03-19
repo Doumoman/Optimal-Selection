@@ -9,15 +9,22 @@ public class DialogueManager : IManager
     // 대화 데이터를 캐싱하는 Dictionary
     private Dictionary<string, DialogueData> _dialogueDB = new Dictionary<string, DialogueData>();
 
+    // 대화 진행도를 저장하는 Dictionary (Key: NPC 더미 아이디, Value: 실제 출력할 대화 아이디)
+    private Dictionary<string, string> _dialogueProgressDB = new Dictionary<string, string>();
+
     // 현재 진행 중인 대화 데이터와 열려있는 팝업 UI 참조
     private DialogueData _currentDialogue;
     private UI_Popup_Dialogue _currentPopup;
+    private UI_Popup_Select _currentSelectPopup;
+
     private Action<string> _onDialogueEndCallBack;
     private string _initialStartID;
 
-    public event Action<string> OnDialogueEvent; // 이벤트의 이름을 넘겨준다
+    private bool _isWaitingForChoice = false;
+
+    public event Action<string> OnDialogueEvent;
     public event Action OnDialogueEnd;
-    public Func<string, string> OnBranchDecide; // 델리게이트
+    public Func<string, string> OnBranchDecide;
 
     [Serializable]
     public class DialogueData
@@ -30,15 +37,29 @@ public class DialogueManager : IManager
         public string NextStartID;
         public string EventName;
 
-        // 다회차, 엔딩 분기를 위한 데이터
-        public string FailID; // RequiredEnding 조건을 만족하지 못할시의 다음 대화 ID
-        public string RequiredEnding; // 특정 엔딩을 봐야만 볼 수 있는 대화에 이 값을 채운다. ex) Ending_Normal -> 노말 엔딩을 본 적 있어야 볼 수 있음
+        public string FailID;
+        public string RequiredEnding;
+
+        public List<string> Choices = new List<string>();
+        public List<string> ChoiceNextIDs = new List<string>();
     }
 
     public void Init()
     {
         if (_init) return;
         _init = true;
+    }
+
+    // 게임 로드를 위한 함수
+    public void LoadProgressData(Dictionary<string, string> savedProgress)
+    {
+        _dialogueProgressDB = savedProgress;
+    }
+
+    // 게임 세이브를 위한 함수
+    public Dictionary<string, string> GetProgressData()
+    {
+        return _dialogueProgressDB;
     }
 
     public void LoadDialogueData(string csvFileName)
@@ -55,9 +76,13 @@ public class DialogueManager : IManager
         for (int i = 0; i < parsedData.Count; i++)
         {
             var row = parsedData[i];
+
+            string rowID = row.ContainsKey("ID") ? row["ID"].ToString() : "";
+            if (string.IsNullOrEmpty(rowID) || rowID.StartsWith("#") || rowID.StartsWith("=")) continue;
+
             DialogueData data = new DialogueData();
 
-            data.ID = row.ContainsKey("ID") ? row["ID"].ToString() : "";
+            data.ID = rowID;
             data.Speaker = row.ContainsKey("Speaker") ? row["Speaker"].ToString() : "";
             data.DialogueText = row.ContainsKey("Dialogue") ? row["Dialogue"].ToString() : "";
             data.PortraitName = row.ContainsKey("Portrait") ? row["Portrait"].ToString() : "";
@@ -68,26 +93,45 @@ public class DialogueManager : IManager
             data.RequiredEnding = row.ContainsKey("RequiredEnding") ? row["RequiredEnding"].ToString() : "";
             data.FailID = row.ContainsKey("FailID") ? row["FailID"].ToString() : "";
 
-            if (string.IsNullOrEmpty(data.NextID)) // 분기점이 아닌 대화
+            for (int j = 1; j <= 4; j++) // 최대 4개의 선택지 (변동 가능)
             {
-                // 다음 줄이 존재한다면
-                if (i + 1 < parsedData.Count)
-                {
-                    var nextRow = parsedData[i + 1];
-                    string nextRowId = nextRow.ContainsKey("ID") ? nextRow["ID"].ToString() : "";
+                string choiceCol = $"Choice{j}";
+                string nextIDCol = $"NextID{j}";
 
-                    if (!string.IsNullOrEmpty(nextRowId))
+                if (row.ContainsKey(choiceCol) && !string.IsNullOrEmpty(row[choiceCol].ToString()))
+                {
+                    data.Choices.Add(row[choiceCol].ToString());
+
+                    string choiceNextID = row.ContainsKey(nextIDCol) ? row[nextIDCol].ToString() : "";
+                    data.ChoiceNextIDs.Add(choiceNextID);
+                }
+            }
+
+            if (string.IsNullOrEmpty(data.NextID) && data.Choices.Count == 0)
+            {
+                int nextIndex = i + 1;
+                string nextRowId = "";
+
+                while (nextIndex < parsedData.Count)
+                {
+                    var nextRow = parsedData[nextIndex];
+                    string tempId = nextRow.ContainsKey("ID") ? nextRow["ID"].ToString() : "";
+
+                    // 가독성을 위해 ID에 =가 붙일 수 있음
+                    if (!string.IsNullOrEmpty(tempId) && !tempId.StartsWith("="))
                     {
-                        data.NextID = nextRowId; // 분기점 존재
+                        nextRowId = tempId;
+                        break;
                     }
-                    else
-                    {
-                        data.NextID = "End";
-                    }
+                    nextIndex++;
+                }
+
+                if (!string.IsNullOrEmpty(nextRowId))
+                {
+                    data.NextID = nextRowId;
                 }
                 else
                 {
-                    // CSV의 마지막 줄
                     data.NextID = "End";
                 }
             }
@@ -102,35 +146,49 @@ public class DialogueManager : IManager
     }
 
     /// <summary>
-    /// 엔딩 조건을 검사하여 실제로 화면에 출력할 유효한 대화 데이터를 찾아 반환
+    /// 진행도 검사 -> 동적 분기 검사 -> 기획 조건 검사를 모두 거쳐 최종 대화 데이터를 반환
     /// </summary>
-    private DialogueData GetValidDialogue(string startID)
+    private DialogueData GetValidDialogue(string requestID)
     {
-        string currentID = startID;
+        string currentID = requestID;
 
-        // 조건에 맞는 대화를 찾을 때까지 FailID를 타고 계속 검색
+        // 1. 진행도(Progress) 검사
+        if (_dialogueProgressDB.ContainsKey(currentID) && !string.IsNullOrEmpty(_dialogueProgressDB[currentID]))
+        {
+            currentID = _dialogueProgressDB[currentID];
+        }
+
+        // 2. 동적 코드 분기(Delegate) 검사
+        if (OnBranchDecide != null)
+        {
+            string branchedID = OnBranchDecide.Invoke(currentID);
+            if (!string.IsNullOrEmpty(branchedID))
+            {
+                currentID = branchedID;
+            }
+        }
+
+        // 3. 다회차/엔딩 조건(Condition) 검사
         while (!string.IsNullOrEmpty(currentID) && _dialogueDB.ContainsKey(currentID))
         {
             DialogueData data = _dialogueDB[currentID];
 
-            // RequiredEnding 칸이 비어있거나, 해당 엔딩을 클리어한 기록이 있다면 통과
             if (string.IsNullOrEmpty(data.RequiredEnding) || CheckIfEndingCleared(data.RequiredEnding))
             {
                 return data;
             }
             else
             {
-                // 불합격이면 FailID로 점프하여 대체 대화를 다시 검사
                 currentID = data.FailID;
             }
         }
 
-        return null; // 끝까지 유효한 대화를 찾지 못함
+        return null;
     }
 
     private bool CheckIfEndingCleared(string endingName)
     {
-        // TODO: 실제 게임에서는 SaveManager 등에서 저장된 엔딩 목록을 확인해야함
+        // TODO
         return false;
     }
 
@@ -138,23 +196,13 @@ public class DialogueManager : IManager
     {
         _onDialogueEndCallBack = onDialogueEnd;
         _initialStartID = startID;
+        _isWaitingForChoice = false;
 
-        string targetID = startID;
-
-        if (OnBranchDecide != null) // 분기가 있을 때
-        {
-            string branchedID = OnBranchDecide.Invoke(startID);
-            if (!string.IsNullOrEmpty(branchedID))
-            {
-                targetID = branchedID; // 대화 시작용 더미 아이디를 실제 CSV 파일에 존재하는 아이디로 변경
-            }
-        }
-
-        _currentDialogue = GetValidDialogue(targetID);
+        _currentDialogue = GetValidDialogue(startID);
 
         if (_currentDialogue == null)
         {
-            Debug.LogWarning($"[DialogueManager] 유효한 대화 ID를 찾을 수 없습니다. 요청ID: {startID}, 변환된ID: {targetID}");
+            Debug.LogWarning($"[DialogueManager] 유효한 대화 ID를 찾을 수 없습니다. 요청ID: {startID}");
             return;
         }
 
@@ -163,55 +211,103 @@ public class DialogueManager : IManager
             _currentPopup = Managers.UI.ShowPopupUI<UI_Popup_Dialogue>("UI_Popup_Dialogue");
         }
 
+        if (!_currentPopup.gameObject.activeSelf)
+        {
+            _currentPopup.gameObject.SetActive(true);
+        }
+
         _currentPopup.SetDialogue(_currentDialogue);
     }
 
     public void ProcessNextDialogue()
     {
         if (_currentDialogue == null) return;
+        if (_isWaitingForChoice) return;
+
+        // 선택지가 존재할 경우 대화창을 끄고 선택창을 띄운다
+        if (_currentDialogue.Choices != null && _currentDialogue.Choices.Count > 0)
+        {
+            _isWaitingForChoice = true;
+
+            if (_currentPopup != null)
+            {
+                _currentPopup.gameObject.SetActive(false);
+            }
+
+            _currentSelectPopup = Managers.UI.ShowPopupUI<UI_Popup_Select>("UI_Popup_Select");
+            _currentSelectPopup.Setup(_currentDialogue.Choices.ToArray(), OnChoiceSelected);
+            return;
+        }
 
         string nextID = _currentDialogue.NextID;
 
-        if (OnBranchDecide != null) // 동적 분기
-        {
-            string branchedID = OnBranchDecide.Invoke(_currentDialogue.ID); // 현재 ID를 델리게이트로 넘겨줌, 처리 후 분기점 ID를 반환받는다!
-            if (!string.IsNullOrEmpty(branchedID))
-            {
-                nextID = branchedID;
-            }
-        }
-
-        // 다음 대화 진행 또는 대화 종료
         if (string.IsNullOrEmpty(nextID) || nextID == "End")
         {
             EndDialogue();
         }
         else
         {
-            _currentDialogue = GetValidDialogue(nextID);
-
-            if (_currentDialogue != null)
-            {
-                _currentPopup.SetDialogue(_currentDialogue);
-            }
-            else
-            {
-                Debug.LogWarning($"[DialogueManager] 유효한 다음 대화를 찾을 수 없어 대화를 종료합니다: {nextID}");
-                EndDialogue();
-            }
+            AdvanceToDialogue(nextID);
         }
     }
 
+    private void OnChoiceSelected(int selectedIndex)
+    {
+        _isWaitingForChoice = false;
+        _currentSelectPopup = null;
+
+        if (_currentDialogue == null) return;
+
+        string nextID = _currentDialogue.ChoiceNextIDs[selectedIndex];
+
+        if (string.IsNullOrEmpty(nextID) || nextID == "End")
+        {
+            EndDialogue();
+        }
+        else
+        {
+            AdvanceToDialogue(nextID);
+        }
+    }
+
+    /// <summary>
+    /// 다음 대화로 매끄럽게 넘어가게 하기 위한 함수
+    /// </summary>
+    private void AdvanceToDialogue(string nextID)
+    {
+        _currentDialogue = GetValidDialogue(nextID);
+
+        if (_currentDialogue != null)
+        {
+            if (_currentPopup != null && !_currentPopup.gameObject.activeSelf)
+            {
+                _currentPopup.gameObject.SetActive(true);
+            }
+            else if (_currentPopup == null)
+            {
+                _currentPopup = Managers.UI.ShowPopupUI<UI_Popup_Dialogue>("UI_Popup_Dialogue");
+            }
+
+            _currentPopup.SetDialogue(_currentDialogue);
+        }
+        else
+        {
+            Debug.LogWarning($"[DialogueManager] 유효한 다음 대화를 찾을 수 없어 대화를 종료합니다. 요청ID: {nextID}");
+            EndDialogue();
+        }
+    }
+
+    /// <summary>
+    /// 엑셀에 써있는 이벤트 이름을 보고 이벤트를 실행해주는 함수
+    /// </summary>
     public void TriggerDialogueEvent(string eventNames)
     {
         if (string.IsNullOrEmpty(eventNames)) return;
 
-        // 쉼표(,)를 기준으로 문자열을 쪼깸
         string[] events = eventNames.Split(',');
 
-        foreach (string evt in events) // 여러 이벤트 처리 가능
+        foreach (string evt in events)
         {
-            // 앞뒤 공백을 제거
             string cleanEvent = evt.Trim();
 
             if (!string.IsNullOrEmpty(cleanEvent))
@@ -221,8 +317,17 @@ public class DialogueManager : IManager
         }
     }
 
+    /// <summary>
+    /// 대화가 끝났을 때 실행되는 함수
+    /// </summary>
     public void EndDialogue()
     {
+        if (_currentSelectPopup != null)
+        {
+            Managers.UI.ClosePopupUI(_currentSelectPopup);
+            _currentSelectPopup = null;
+        }
+
         if (_currentPopup != null)
         {
             Managers.UI.ClosePopupUI(_currentPopup);
@@ -231,14 +336,17 @@ public class DialogueManager : IManager
 
         string idToSave = _initialStartID;
 
-        if(_currentDialogue != null && !String.IsNullOrEmpty(_currentDialogue.NextStartID))
+        if (_currentDialogue != null && !String.IsNullOrEmpty(_currentDialogue.NextStartID))
         {
-            idToSave = _currentDialogue.NextStartID;
+            idToSave = _currentDialogue.NextStartID; // 다시 말 걸었을 때의 시작 대화의 ID
+            _dialogueProgressDB[_initialStartID] = idToSave;
         }
 
-        _onDialogueEndCallBack?.Invoke(idToSave); // 다음 시작 아이디 갱신
+        _onDialogueEndCallBack?.Invoke(idToSave);
 
         _currentDialogue = null;
+        _isWaitingForChoice = false;
+
         OnDialogueEnd?.Invoke();
         ClearEvents();
     }
@@ -247,20 +355,21 @@ public class DialogueManager : IManager
     {
         OnDialogueEvent = null;
         OnDialogueEnd = null;
-
-        // OnBranchDecide는 일회성 이벤트가 아님
     }
 
     public void Clear()
     {
         _dialogueDB.Clear();
         _currentPopup = null;
+        _currentSelectPopup = null;
+        _isWaitingForChoice = false;
         ClearEvents();
     }
 
     public void OnDestroy()
     {
-        Clear();
+        //Clear();
+        _dialogueProgressDB.Clear();
         _init = false;
     }
 }
