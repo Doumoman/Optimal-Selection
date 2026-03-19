@@ -246,13 +246,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3628196770707332535, guid: 716efb2ce147cf747985accfaec784b0, type: 3}
+      propertyPath: startDialogueID
+      value: Stapi_Tutorial_Puzzle01_Branch01_01
+      objectReference: {fileID: 0}
     - target: {fileID: 5586830993596734552, guid: 716efb2ce147cf747985accfaec784b0, type: 3}
       propertyPath: m_Name
       value: '[002]_Chapter0_Observatory_MiddleFloor1'
-      objectReference: {fileID: 0}
-    - target: {fileID: 5586830993596734552, guid: 716efb2ce147cf747985accfaec784b0, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -311,10 +311,6 @@ PrefabInstance:
     - target: {fileID: 5306994920761142732, guid: 96874e6890ce187429ad60861af7bc22, type: 3}
       propertyPath: m_Name
       value: '[001]_Chapter0_Observatory_5thFloor'
-      objectReference: {fileID: 0}
-    - target: {fileID: 5306994920761142732, guid: 96874e6890ce187429ad60861af7bc22, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8707560042589498503, guid: 96874e6890ce187429ad60861af7bc22, type: 3}
       propertyPath: m_LocalPosition.x
@@ -597,10 +593,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[003]_Chapter0_Observatory_MiddleFloor2'
       objectReference: {fileID: 0}
-    - target: {fileID: 791056760498137293, guid: 1e4b1262415152841964e95fa67ff709, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4148231833627093808, guid: 1e4b1262415152841964e95fa67ff709, type: 3}
       propertyPath: m_LocalPosition.x
       value: 24
@@ -663,10 +655,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[005]_Chapter0_Observatory_1stFloor'
       objectReference: {fileID: 0}
-    - target: {fileID: 6615986745281039571, guid: ead27ab1a4693ca40a28a1cb6daa795e, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6886837202744264455, guid: ead27ab1a4693ca40a28a1cb6daa795e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 48
@@ -728,10 +716,6 @@ PrefabInstance:
     - target: {fileID: 3528887425004272427, guid: 02dd4695282b0ee489b3cd7a0cee4852, type: 3}
       propertyPath: m_Name
       value: '[004]_Chapter0_Observatory_MiddleFloor3'
-      objectReference: {fileID: 0}
-    - target: {fileID: 3528887425004272427, guid: 02dd4695282b0ee489b3cd7a0cee4852, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5628950709759224668, guid: 02dd4695282b0ee489b3cd7a0cee4852, type: 3}
       propertyPath: m_LocalPosition.x
