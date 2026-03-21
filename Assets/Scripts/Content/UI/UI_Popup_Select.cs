@@ -74,6 +74,8 @@ public class UI_Popup_Select : UI_Popup
 
         UpdateSelectionUI();
         ShowPopup();
+
+        Debug.Log("Set up!");
     }
 
     private void ShowPopup()
