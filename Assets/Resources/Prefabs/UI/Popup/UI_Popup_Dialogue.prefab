@@ -267,6 +267,8 @@ MonoBehaviour:
     EventName: 
     FailID: 
     RequiredEnding: 
+    Choices: []
+    ChoiceNextIDs: []
 --- !u!1 &1295214346334727199
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,8 +489,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u3147\u3134\u3141\u3147\u3141\u3134\u3134\u3147\u3141\u3134\u3147\u3141\u3134\u3147\u3141\u3134\u3147\u3134\u3141\u3147\u3141\u3134\u3147\u3141\u3134\u3147\u3141\u3134\u3147\u3134\u3141\u3147\u3134\u3141\u3147\u3141\u3134\u3147\u3147\u314E\u3139\u3147"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fa889714fa883bc44996877a05c981da, type: 2}
-  m_sharedMaterial: {fileID: 7740023482861472660, guid: fa889714fa883bc44996877a05c981da, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55add786cc5121444aa50a5bf3fb18ac, type: 2}
+  m_sharedMaterial: {fileID: -458345605035887663, guid: 55add786cc5121444aa50a5bf3fb18ac, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

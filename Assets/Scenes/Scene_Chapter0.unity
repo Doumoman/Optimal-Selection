@@ -246,10 +246,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3628196770707332535, guid: 716efb2ce147cf747985accfaec784b0, type: 3}
-      propertyPath: startDialogueID
-      value: Stapi_Tutorial_Puzzle01_Branch01_01
-      objectReference: {fileID: 0}
     - target: {fileID: 5586830993596734552, guid: 716efb2ce147cf747985accfaec784b0, type: 3}
       propertyPath: m_Name
       value: '[002]_Chapter0_Observatory_MiddleFloor1'
@@ -595,7 +591,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4148231833627093808, guid: 1e4b1262415152841964e95fa67ff709, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4148231833627093808, guid: 1e4b1262415152841964e95fa67ff709, type: 3}
       propertyPath: m_LocalPosition.y
@@ -657,7 +653,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6886837202744264455, guid: ead27ab1a4693ca40a28a1cb6daa795e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 48
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 6886837202744264455, guid: ead27ab1a4693ca40a28a1cb6daa795e, type: 3}
       propertyPath: m_LocalPosition.y
@@ -719,7 +715,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5628950709759224668, guid: 02dd4695282b0ee489b3cd7a0cee4852, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 48
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5628950709759224668, guid: 02dd4695282b0ee489b3cd7a0cee4852, type: 3}
       propertyPath: m_LocalPosition.y
