@@ -67,7 +67,7 @@ public class UI_Popup_ItemInfo : UI_Popup
     public override void OnCancel()
     {
         if (!_canInput) return;
-        base.OnCancel();
+        Managers.UI.ClosePopupUI(this);
     }
 
     private IEnumerator CoInitCursorPosition()

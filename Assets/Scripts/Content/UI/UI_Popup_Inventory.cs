@@ -152,7 +152,7 @@ public class UI_Popup_Inventory : UI_Popup
     public override void OnCancel() // 취소/닫기(esc) 로직
     {
         if (!_canInput) return;
-        base.OnCancel();
+        Managers.UI.ClosePopupUI(this);
     }
 
     private IEnumerator CoInitCursorPosition()

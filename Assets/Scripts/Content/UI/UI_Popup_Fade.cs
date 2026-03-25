@@ -10,7 +10,7 @@ public class UI_Popup_Fade : UI_Popup
     void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
-        if( _canvasGroup ==null)
+        if (_canvasGroup == null)
         {
             _canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
