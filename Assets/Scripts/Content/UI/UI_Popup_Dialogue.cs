@@ -18,6 +18,7 @@ public class UI_Popup_Dialogue : UI_Popup
     private bool _isTyping = false;
     private Coroutine _typingCoroutine;
     [SerializeField] private DialogueManager.DialogueData _currentDialogueData;
+    private string _processedDialogueText;
 
     // CSV에서 Speaker 칸은 영어로 입력
     private Dictionary<string, string> _speakerNameMap = new Dictionary<string, string>()
@@ -49,6 +50,7 @@ public class UI_Popup_Dialogue : UI_Popup
     public void SetDialogue(DialogueManager.DialogueData data)
     {
         _currentDialogueData = data;
+        _processedDialogueText = Managers.Dialogue.ProcessTextVariables(data.DialogueText);
 
         // Speaker 이름 설정
         if (string.IsNullOrEmpty(data.Speaker))
@@ -93,7 +95,7 @@ public class UI_Popup_Dialogue : UI_Popup
 
         // 타이핑 효과 시작
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
-        _typingCoroutine = StartCoroutine(TypingEffect(data.DialogueText));
+        _typingCoroutine = StartCoroutine(TypingEffect(_processedDialogueText));
     }
 
     /// <summary>
@@ -107,8 +109,8 @@ public class UI_Popup_Dialogue : UI_Popup
         {
             if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
 
-            dialogueText.maxVisibleCharacters = dialogueText.textInfo.characterCount;
-            dialogueText.text = _currentDialogueData.DialogueText;
+            dialogueText.maxVisibleCharacters = _processedDialogueText.Length;
+            dialogueText.text = _processedDialogueText;
             _isTyping = false;
         }
         else

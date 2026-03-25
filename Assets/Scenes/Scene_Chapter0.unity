@@ -366,10 +366,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2321094336060300247, guid: 12242247d8b11c9419511ce7cc5b8447, type: 3}
-      propertyPath: m_GridSnapping
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3786248275691928293, guid: 12242247d8b11c9419511ce7cc5b8447, type: 3}
       propertyPath: target
       value: 

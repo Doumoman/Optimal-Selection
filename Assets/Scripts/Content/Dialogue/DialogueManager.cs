@@ -12,6 +12,10 @@ public class DialogueManager : IManager
     // 대화 진행도를 저장하는 Dictionary (Key: NPC 더미 아이디, Value: 실제 출력할 대화 아이디)
     private Dictionary<string, string> _dialogueProgressDB = new Dictionary<string, string>();
 
+    // 플레이어가 입력한 값들을 저장하는 Dictionary ( " PlayerName : 지나 ")
+    // TODO: 게임 세이브 데이터에 저장 및 로드가 필요
+    public Dictionary<string, string> StringVariables = new Dictionary<string, string>();
+
     // 현재 진행 중인 대화 데이터와 열려있는 팝업 UI 참조
     private DialogueData _currentDialogue;
     private UI_Popup_Dialogue _currentPopup;
@@ -36,6 +40,9 @@ public class DialogueManager : IManager
         public string NextID;
         public string NextStartID;
         public string EventName;
+
+        public string InputQuestion;
+        public string InputKey;
 
         public string FailID;
         public string RequiredEnding;
@@ -90,6 +97,9 @@ public class DialogueManager : IManager
             data.NextStartID = row.ContainsKey("NextStartID") ? row["NextStartID"].ToString() : "";
             data.EventName = row.ContainsKey("EventName") ? row["EventName"].ToString() : "";
 
+            data.InputQuestion = row.ContainsKey("InputQuestion") ? row["InputQuestion"].ToString() : "";
+            data.InputKey = row.ContainsKey("InputKey") ? row["InputKey"].ToString() : "";
+
             data.RequiredEnding = row.ContainsKey("RequiredEnding") ? row["RequiredEnding"].ToString() : "";
             data.FailID = row.ContainsKey("FailID") ? row["FailID"].ToString() : "";
 
@@ -143,6 +153,18 @@ public class DialogueManager : IManager
         }
 
         Debug.Log($"[DialogueManager] 대화 데이터 로드 완료: 총 {_dialogueDB.Count}건");
+    }
+
+    // 팝업에 대사를 넘겨주기 직전에, 중괄호 { } 로 묶인 글자를 유저가 입력한 값으로 바꿔치기
+    // 원본 대사 대신 정제된 사본 대사를 넘겨준다
+    public string ProcessTextVariables(string rawText)
+    {
+        string processedText = rawText;
+        foreach (var variable in StringVariables)
+        {
+            processedText = processedText.Replace($"{{{variable.Key}}}", variable.Value);
+        }
+        return processedText;
     }
 
     /// <summary>
@@ -224,6 +246,28 @@ public class DialogueManager : IManager
         if (_currentDialogue == null) return;
         if (_isWaitingForChoice) return;
 
+        // 입력창이 필요한 대사라면 입력창을 띄운다
+        if (!string.IsNullOrEmpty(_currentDialogue.InputKey))
+        {
+            _isWaitingForChoice = true; // 입력이 끝날 때까지 대화 진행을 멈춤
+
+            // 대화창 잠시 숨기기
+            if (_currentPopup != null) _currentPopup.gameObject.SetActive(false);
+
+            // 입력 팝업 띄우기
+            var inputPopup = Managers.UI.ShowPopupUI<UI_Popup_Input>("UI_Popup_Input");
+            inputPopup.Setup((inputValue) => 
+            {
+                // 유저가 입력을 마치고 확인을 누르면 실행됨
+                StringVariables[_currentDialogue.InputKey] = inputValue; // 딕셔너리에 저장
+                _isWaitingForChoice = false;
+
+                // 다음 대사로 진행
+                AdvanceToDialogue(_currentDialogue.NextID);
+            }, _currentDialogue.InputQuestion);
+            return;
+        }
+
         // 선택지가 존재할 경우 대화창을 끄고 선택창을 띄운다
         if (_currentDialogue.Choices != null && _currentDialogue.Choices.Count > 0)
         {
@@ -286,8 +330,8 @@ public class DialogueManager : IManager
             else if (_currentPopup == null)
             {
                 _currentPopup = Managers.UI.ShowPopupUI<UI_Popup_Dialogue>("UI_Popup_Dialogue");
+            
             }
-
             _currentPopup.SetDialogue(_currentDialogue);
         }
         else
