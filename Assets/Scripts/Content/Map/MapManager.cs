@@ -62,17 +62,17 @@ public class MapManager : IManager
             Debug.LogError("[MapManager] 다음 맵 데이터가 없어서 맵 이동에 실패했습니다");
             return;
         }
-        Managers.Instance.StartCoroutine(CoTransitionMap(nextMapState, nextMapData, entryDirection, duration));
+        SingletonManagers.Instance.StartCoroutine(CoTransitionMap(nextMapState, nextMapData, entryDirection, duration));
     }
 
     public IEnumerator CoTransitionMap(MapState nextMapState, MapDataSO nextMapData,
     MapPortal.PortalDirection entryDirection = MapPortal.PortalDirection.None, float duration = 1.0f)
     {
         // 이동 준비 (입력 차단, ...
-        Managers.Input.SetInput(false);
+        SingletonManagers.Input.SetInput(false);
 
         // 페이드 UI 띄우기
-        UI_Popup_Fade _fade = Managers.UI.ShowPopupUI<UI_Popup_Fade>("UI_Popup_Fade");
+        UI_Popup_Fade _fade = SingletonManagers.UI.GetFade();
         bool isFadeCompleted = false;
 
         // 페이드 아웃 시작
@@ -112,8 +112,8 @@ public class MapManager : IManager
         yield return new WaitUntil(() => isFadeCompleted);
 
         // 맵 이동 완료
-        Managers.UI.CloseAllPopupUI();
-        Managers.Input.SetInput(true);
+        SingletonManagers.UI.CloseAllPopupUI();
+        SingletonManagers.Input.SetInput(true);
     }
 
     private void RestoreMapState(MapDataSO mapDataSO)
@@ -158,7 +158,7 @@ public class MapManager : IManager
         // 포탈을 통한 이동이 아님, 세이브/로드 
         if (entryDirection == MapPortal.PortalDirection.None)
         {
-            player.transform.position = Managers.Data.CurrentData.currentMapPosition;
+            player.transform.position = SingletonManagers.Data.CurrentData.currentMapPosition;
             return;
         }
         else

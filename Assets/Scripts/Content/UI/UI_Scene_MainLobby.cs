@@ -26,14 +26,14 @@ public class UI_Scene_MainLobby : MonoBehaviour
         Debug.Log("[MainLobby] 새 게임 시작! 데이터 초기화 및 챕터 0 로드");
 
         // TODO: 세이브 데이터 초기화 로직
-        Managers.Data.CreateNewGameData();
+        SingletonManagers.Data.CreateNewGameData();
         SceneManager.LoadScene("Scene_Chapter0");
     }
 
     private void OnClickContinue()
     {
         Debug.Log("[MainLobby] 이어하기 - 세이브 데이터를 불러옵니다.");
-        Managers.Data.LoadGame();
+        SingletonManagers.Data.LoadGame();
         // TODO: 세이브된 데이터 불러와서 마지막 세이브 포인트 위치로 
     }
 

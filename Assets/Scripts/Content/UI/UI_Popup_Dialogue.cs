@@ -31,26 +31,26 @@ public class UI_Popup_Dialogue : UI_Popup
 
     private void OnEnable()
     {
-        if (Managers.Input != null)
+        if (SingletonManagers.Input != null)
         {
-            Managers.Input.OnSubmitPressed += SkipCurrentDialogue; // 엔터키
-            Managers.Input.OnInteractPressed += SkipCurrentDialogue; // 스페이스키
+            SingletonManagers.Input.OnSubmitPressed += SkipCurrentDialogue; // 엔터키
+            SingletonManagers.Input.OnInteractPressed += SkipCurrentDialogue; // 스페이스키
         }
     }
 
     private void OnDisable()
     {
-        if (Managers.Input != null)
+        if (SingletonManagers.Input != null)
         {
-            Managers.Input.OnSubmitPressed -= SkipCurrentDialogue;
-            Managers.Input.OnInteractPressed -= SkipCurrentDialogue;
+            SingletonManagers.Input.OnSubmitPressed -= SkipCurrentDialogue;
+            SingletonManagers.Input.OnInteractPressed -= SkipCurrentDialogue;
         }
     }
 
     public void SetDialogue(DialogueManager.DialogueData data)
     {
         _currentDialogueData = data;
-        _processedDialogueText = Managers.Dialogue.ProcessTextVariables(data.DialogueText);
+        _processedDialogueText = SingletonManagers.Dialogue.ProcessTextVariables(data.DialogueText);
 
         // Speaker 이름 설정
         if (string.IsNullOrEmpty(data.Speaker))
@@ -73,7 +73,7 @@ public class UI_Popup_Dialogue : UI_Popup
         // 초상화(Portrait) 설정
         if (!string.IsNullOrEmpty(data.PortraitName))
         {
-            Sprite loadedSprite = Managers.Resource.Load<Sprite>($"Portraits/{data.PortraitName}"); // Resources/Portraits/{이름}
+            Sprite loadedSprite = SingletonManagers.Resource.Load<Sprite>($"Portraits/{data.PortraitName}"); // Resources/Portraits/{이름}
             if (loadedSprite != null)
             {
                 portraitImage.sprite = loadedSprite;
@@ -91,7 +91,7 @@ public class UI_Popup_Dialogue : UI_Popup
         }
 
         // 대화 이벤트가 존재하면 이벤트 실행
-        Managers.Dialogue.TriggerDialogueEvent(data.EventName);
+        SingletonManagers.Dialogue.TriggerDialogueEvent(data.EventName);
 
         // 타이핑 효과 시작
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
@@ -115,7 +115,7 @@ public class UI_Popup_Dialogue : UI_Popup
         }
         else
         {
-            Managers.Dialogue.ProcessNextDialogue();
+            SingletonManagers.Dialogue.ProcessNextDialogue();
         }
     }
 

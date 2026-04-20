@@ -21,11 +21,11 @@ public class BattleSceneBinder : MonoBehaviour
             patternRunner = patternRunner,
             battleFieldView = battleFieldView
         };
-        Managers.Battle.RegisterScene(refs);
+        SingletonManagers.Battle.RegisterScene(refs);
     }
 
     private void Update()
     {
-        Managers.Battle.Tick();
+        SingletonManagers.Battle.Tick();
     }
 }

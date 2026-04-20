@@ -148,13 +148,13 @@ public class BattleManager : IManager
 
         // Resources/Battle/Data/Enemy1.asset 형태를 가정
         // 여기 안에 SO를 넣고 데이터를 받아주면 된다.
-        return Managers.Resource.Load<EnemyBattleSO>($"Battle/Enemy/{enemyId}");
+        return SingletonManagers.Resource.Load<EnemyBattleSO>($"Battle/Enemy/{enemyId}");
     }
 
 
     private GameObject LoadDefaultSoulPrefab()
     {
-        return Managers.Resource.Load<GameObject>("Battle/Player/PlayerSoul");
+        return SingletonManagers.Resource.Load<GameObject>("Battle/Player/PlayerSoul");
     }
 
     public void ChangeState(BattleStateType nextStateType)
@@ -206,14 +206,14 @@ public class BattleManager : IManager
 
         Sprite portrait = null;
         if (!string.IsNullOrEmpty(data.PortraitName))
-            portrait = Managers.Resource.Load<Sprite>($"Portraits/{data.PortraitName}");
+            portrait = SingletonManagers.Resource.Load<Sprite>($"Portraits/{data.PortraitName}");
 
         Context.SceneRefs.enemySpeechUI.Show(data.Speaker, data.Text, portrait, onComplete);
     }
 
     public void ShowSystemDialogue(string dialogueId, Action<string> onEnd = null)
     {
-        Managers.Dialogue.StartDialogue(dialogueId, onEnd);
+        SingletonManagers.Dialogue.StartDialogue(dialogueId, onEnd);
     }
 
     public void FinishBattle(BattleResult result)

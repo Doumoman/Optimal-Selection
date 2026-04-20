@@ -4,12 +4,12 @@ public class UI_Popup : UI_Base
 {
     public override void Init()
     {
-        Managers.UI.SetCanvas(gameObject, true);
+        SingletonManagers.UI.SetCanvas(gameObject, true);
     }
 
     public virtual void ClosePopupUI()
     {
-        Managers.UI.ClosePopupUI(this);
+        SingletonManagers.UI.ClosePopupUI(this);
     }
 
     public virtual void OnInput(Vector2 direction) { } // 팝업 내 방향키 입력 처리

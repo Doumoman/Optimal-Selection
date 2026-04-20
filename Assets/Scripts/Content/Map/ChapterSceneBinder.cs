@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Yarn.Unity;
 
 public class ChapterSceneBinder : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class ChapterSceneBinder : MonoBehaviour
     [SerializeField] private Transform chapterUIRoot;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private ChapterManager chapterManager;
+    [SerializeField] private DialogueRunner _runner;
     
 
     private void Start()
@@ -23,7 +25,8 @@ public class ChapterSceneBinder : MonoBehaviour
             chapterManager = chapterManager
         };
 
-        Managers.Map.RegisterScene(_chapterSceneRefs);
+        SingletonManagers.Map.RegisterScene(_chapterSceneRefs);
+        SingletonManagers.Story.RegisterRunner(_runner);
         chapterManager.RegisterScene(_chapterSceneRefs);
     }
 }

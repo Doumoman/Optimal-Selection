@@ -24,7 +24,7 @@ public class BattleTrigger : MonoBehaviour
             pauseWorldObjects = true
         };
 
-        Managers.Battle.StartBattle(request);
+        SingletonManagers.Battle.StartBattle(request);
     }
 
     public void ResetTrigger()

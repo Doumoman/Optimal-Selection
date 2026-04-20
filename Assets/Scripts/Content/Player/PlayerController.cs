@@ -38,11 +38,11 @@ public class PlayerController : MonoBehaviour
         lastDir = Vector2.down;
         ChangeState(idleState);
 
-        Managers.Input.OnMove -= HandleGamePlayMove;
-        Managers.Input.OnMove += HandleGamePlayMove;
+        SingletonManagers.Input.OnMove -= HandleGamePlayMove;
+        SingletonManagers.Input.OnMove += HandleGamePlayMove;
 
-        Managers.Input.OnSneakPressed -= HandleGamePlaySneak;
-        Managers.Input.OnSneakPressed += HandleGamePlaySneak;
+        SingletonManagers.Input.OnSneakPressed -= HandleGamePlaySneak;
+        SingletonManagers.Input.OnSneakPressed += HandleGamePlaySneak;
     }
 
     // Update is called once per frame

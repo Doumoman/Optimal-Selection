@@ -49,6 +49,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        _isShuttingDown = true;
+        if (_instance == this)
+            _instance = null;
     }
 }

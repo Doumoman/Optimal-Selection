@@ -74,10 +74,5 @@ public class ResourceManager : IManager
         Resources.UnloadUnusedAssets();
     }
 
-    public void OnDestroy()
-    {
-        _resources.Clear();
-        // 사용하지 않는 에셋 메모리 해제
-        Resources.UnloadUnusedAssets();
-    }
+    public void OnDestroy() => Clear();
 }

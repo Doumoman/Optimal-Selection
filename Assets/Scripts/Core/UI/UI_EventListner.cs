@@ -8,17 +8,17 @@ public class UI_EventListener : MonoBehaviour
     private void Start()
     {
         // UI 관련 입력 이벤트들 구독
-        Managers.Input.OnMenuPressed -= HandleGamePlayMenu;
-        Managers.Input.OnMenuPressed += HandleGamePlayMenu;
+        SingletonManagers.Input.OnMenuPressed -= HandleGamePlayMenu;
+        SingletonManagers.Input.OnMenuPressed += HandleGamePlayMenu;
 
-        Managers.Input.OnInput -= HandleUIInput;
-        Managers.Input.OnInput += HandleUIInput;
+        SingletonManagers.Input.OnInput -= HandleUIInput;
+        SingletonManagers.Input.OnInput += HandleUIInput;
 
-        Managers.Input.OnSubmitPressed -= HandleUISubmit;
-        Managers.Input.OnSubmitPressed += HandleUISubmit;
+        SingletonManagers.Input.OnSubmitPressed -= HandleUISubmit;
+        SingletonManagers.Input.OnSubmitPressed += HandleUISubmit;
 
-        Managers.Input.OnCancelPressed -= HandleUICancel;
-        Managers.Input.OnCancelPressed += HandleUICancel;
+        SingletonManagers.Input.OnCancelPressed -= HandleUICancel;
+        SingletonManagers.Input.OnCancelPressed += HandleUICancel;
     }
 
     private IEnumerator IgnoreInputForMoment()
@@ -30,20 +30,20 @@ public class UI_EventListener : MonoBehaviour
 
     private void HandleGamePlayMenu()
     {
-        int currentPopupCount = Managers.UI.PopupCount;
+        int currentPopupCount = SingletonManagers.UI.PopupCount;
         if (currentPopupCount > 0)
         {
-            Managers.UI.ClosePopupUI();
+            SingletonManagers.UI.ClosePopupUI();
 
-            if (Managers.UI.PopupCount == 0)
+            if (SingletonManagers.UI.PopupCount == 0)
             {
-                Managers.Input.SetInputModeUI(false);
+                SingletonManagers.Input.SetInputModeUI(false);
             }
         }
         else
         {
-            Managers.UI.ShowPopupUI<UI_Popup_Menu>("UI_Popup_Menu");
-            Managers.Input.SetInputModeUI(true);
+            SingletonManagers.UI.ShowPopupUI<UI_Popup_Menu>("UI_Popup_Menu");
+            SingletonManagers.Input.SetInputModeUI(true);
             StartCoroutine(IgnoreInputForMoment()); // 한 프레임동안 남아있는 입력 방지
         }
     }
@@ -52,7 +52,7 @@ public class UI_EventListener : MonoBehaviour
     {
         if (_ignoreInput) return;
 
-        var popup = Managers.UI.GetTopPopup();
+        var popup = SingletonManagers.UI.GetTopPopup();
         if (popup != null)
         {
             popup.OnInput(dir);
@@ -63,7 +63,7 @@ public class UI_EventListener : MonoBehaviour
     {
         if (_ignoreInput) return;
 
-        var popup = Managers.UI.GetTopPopup();
+        var popup = SingletonManagers.UI.GetTopPopup();
         if (popup != null)
         {
             popup.OnSubmit();
@@ -73,15 +73,15 @@ public class UI_EventListener : MonoBehaviour
     {
         if (_ignoreInput) return;
 
-        var popup = Managers.UI.GetTopPopup();
+        var popup = SingletonManagers.UI.GetTopPopup();
         if (popup != null)
         {
             popup.OnCancel();
         }
 
-        if (Managers.UI.PopupCount == 0)
+        if (SingletonManagers.UI.PopupCount == 0)
         {
-            Managers.Input.SetInputModeUI(false);
+            SingletonManagers.Input.SetInputModeUI(false);
             Time.timeScale = 1f;
         }
     }

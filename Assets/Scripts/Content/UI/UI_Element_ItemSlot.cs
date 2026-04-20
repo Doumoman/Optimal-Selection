@@ -7,7 +7,7 @@ public class UI_Element_ItemSlot : MonoBehaviour
 
     public void OnSlotClicked()
     {
-        Managers.UI.ShowPopupUI<UI_Popup_ItemInfo>("UI_Popup_ItemInfo");
+        SingletonManagers.UI.ShowPopupUI<UI_Popup_ItemInfo>("UI_Popup_ItemInfo");
     }
 
     public void SetItem(ItemDataSO data)

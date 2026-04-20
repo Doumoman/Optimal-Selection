@@ -67,7 +67,7 @@ public class UI_Popup_ItemInfo : UI_Popup
     public override void OnCancel()
     {
         if (!_canInput) return;
-        Managers.UI.ClosePopupUI(this);
+        SingletonManagers.UI.ClosePopupUI(this);
     }
 
     private IEnumerator CoInitCursorPosition()
@@ -113,6 +113,6 @@ public class UI_Popup_ItemInfo : UI_Popup
 
     private void OnCloseButtonClick()
     {
-        Managers.UI.ClosePopupUI(this);
+        SingletonManagers.UI.ClosePopupUI(this);
     }
 }

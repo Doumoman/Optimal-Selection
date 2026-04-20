@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Managers : Singleton<Managers>
+public class SingletonManagers : Singleton<SingletonManagers>
 {
     #region Core
     // 기반 관련
@@ -14,6 +14,7 @@ public class Managers : Singleton<Managers>
     // 게임 로직 관련
     private MapManager _map = new MapManager();
     private DialogueManager _dialogue = new DialogueManager();
+    private StoryManager _story = new StoryManager();
     private BattleManager _battle = new BattleManager();
     #endregion
 
@@ -23,11 +24,13 @@ public class Managers : Singleton<Managers>
     public static DataManager Data { get { return Instance?._data; } }
     public static MapManager Map { get { return Instance?._map; } }
     public static DialogueManager Dialogue { get { return Instance?._dialogue; } }
+    public static StoryManager Story { get { return Instance?._story; } }
     public static BattleManager Battle { get { return Instance? ._battle; } }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void InitializeBeforeSceneLoad()
     {
-        var instance = Managers.Instance;
+        var instance = SingletonManagers.Instance;
         Debug.Log("[Managers] System Initialized Before Scene Load.");
     }
 
@@ -54,6 +57,7 @@ public class Managers : Singleton<Managers>
         _ui.Init();
         _map.Init();
         _dialogue.Init();
+        _story.Init();
         _battle.Init();
 
         // UI 이벤트 리스너가 사라지면 
@@ -67,19 +71,24 @@ public class Managers : Singleton<Managers>
 
     public static void Clear()
     {
-        Data.Clear();
-        Resource.Clear();
-        Input.Clear();
-        UI.Clear();
-        Map.Clear();
-        Dialogue.Clear();
-        Battle.Clear();
+        var inst = Instance;
+        if (inst == null) return;
+
+        inst._data?.Clear();
+        inst._resource?.Clear();
+        inst._input?.Clear();
+        inst._ui?.Clear();
+        inst._map?.Clear();
+        inst._dialogue?.Clear();
+        inst._story?.Clear();
+        inst._battle?.Clear();
     }
 
     protected override void OnDestroy() 
     {
         if (_battle != null) _battle.OnDestroy();
         if (_dialogue != null) _dialogue.OnDestroy();
+        if (_story != null) _story.OnDestroy();
         if (_map != null) _map.OnDestroy();
         if (_ui != null) _ui.OnDestroy();
         if (_input != null) _input.OnDestroy();

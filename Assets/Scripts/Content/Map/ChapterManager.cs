@@ -22,7 +22,7 @@ public abstract class ChapterManager : MonoBehaviour
         InitChapterMap();
         RegisterChapterBranches();
 
-        Managers.Dialogue.OnBranchDecide += HandleChapterBranch;
+        SingletonManagers.Dialogue.OnBranchDecide += HandleChapterBranch;
     }
 
     protected abstract void RegisterChapterBranches();
@@ -42,7 +42,7 @@ public abstract class ChapterManager : MonoBehaviour
         // 챕터 시작 맵 좌표 설정
         CurrentCoords = currentChapterData.startMapCoords;
 
-        currentChapterState = Managers.Data.GetOrCreateChapterState(currentChapterData.chapterID);
+        currentChapterState = SingletonManagers.Data.GetOrCreateChapterState(currentChapterData.chapterID);
         if (currentChapterState == null)
         {
             Debug.Log("[ChapterManager] 세이브된 챕터 상태가 없습니다. 새로 생성합니다.");
@@ -61,7 +61,7 @@ public abstract class ChapterManager : MonoBehaviour
         MapState startMapState = currentChapterState.GetOrCreateMapState(startMapDataSO.mapID);
 
         // 맵 이동 요청
-        Managers.Map.TransitionMap(startMapState, startMapDataSO);
+        SingletonManagers.Map.TransitionMap(startMapState, startMapDataSO);
     }
 
     public void InitChapterDialogue()
@@ -71,7 +71,7 @@ public abstract class ChapterManager : MonoBehaviour
             Debug.Log("불러올 챕터 대화 CSV 파일 이름이 비어있습니다!");
         }
 
-        Managers.Dialogue.LoadDialogueData(chapterCSVFileName);
+        SingletonManagers.Dialogue.LoadDialogueData(chapterCSVFileName);
     }
 
     public string HandleChapterBranch(string currentID)
@@ -124,6 +124,6 @@ public abstract class ChapterManager : MonoBehaviour
         CurrentCoords = nextCoords;
         MapState nextMapState = currentChapterState.GetOrCreateMapState(nextMapData.mapID);
 
-        Managers.Map.TransitionMap(nextMapState, nextMapData, portal.GetOppositeDirection());
+        SingletonManagers.Map.TransitionMap(nextMapState, nextMapData, portal.GetOppositeDirection());
     }
 }

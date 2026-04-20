@@ -85,12 +85,12 @@ public class UI_Popup_Menu : UI_Popup
     {
         if (!_canInput) return;
         // ESC 입력 처리 (팝업 닫기)
-        Managers.UI.ClosePopupUI();
+        SingletonManagers.UI.ClosePopupUI();
     }
 
     private void ShowInventoryPopup()
     {
-        var popup = Managers.UI.ShowPopupUI<UI_Popup_Inventory>("UI_Popup_Inventory");
+        var popup = SingletonManagers.UI.ShowPopupUI<UI_Popup_Inventory>("UI_Popup_Inventory");
     }
 
     private IEnumerator CoInitCursorPosition()

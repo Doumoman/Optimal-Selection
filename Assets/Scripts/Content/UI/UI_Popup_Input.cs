@@ -45,7 +45,7 @@ public class UI_Popup_Input : UI_Popup
         }
 
         string finalInput = finalString.Trim();
-        Managers.UI.ClosePopupUI(this);
+        SingletonManagers.UI.ClosePopupUI(this);
         _onSubmitCallBack?.Invoke(finalInput);
     }
 }

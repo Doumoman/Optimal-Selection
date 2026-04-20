@@ -27,19 +27,19 @@ public class UI_Popup_BattleDialogue : UI_Popup
 
     private void OnEnable()
     {
-        if (Managers.Input != null)
+        if (SingletonManagers.Input != null)
         {
-            Managers.Input.OnSubmitPressed += OnSubmitPressed;
-            Managers.Input.OnInteractPressed += OnSubmitPressed;
+            SingletonManagers.Input.OnSubmitPressed += OnSubmitPressed;
+            SingletonManagers.Input.OnInteractPressed += OnSubmitPressed;
         }
     }
 
     private void OnDisable()
     {
-        if (Managers.Input != null)
+        if (SingletonManagers.Input != null)
         {
-            Managers.Input.OnSubmitPressed -= OnSubmitPressed;
-            Managers.Input.OnInteractPressed -= OnSubmitPressed;
+            SingletonManagers.Input.OnSubmitPressed -= OnSubmitPressed;
+            SingletonManagers.Input.OnInteractPressed -= OnSubmitPressed;
         }
     }
 

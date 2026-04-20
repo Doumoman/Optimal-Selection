@@ -29,13 +29,13 @@ public class NPCController : MonoBehaviour
 
         _isInteracting = true; // 대화 상태 진입
 
-        Managers.Input.SetInputModeUI(true);
+        SingletonManagers.Input.SetInputModeUI(true);
         OnInteractEvent?.Invoke();
 
         if (!string.IsNullOrEmpty(startDialogueID))
         {
-            Managers.Dialogue.StartDialogue(startDialogueID);
-            Managers.Dialogue.OnDialogueEnd += HandleDialogueEnd;
+            SingletonManagers.Dialogue.StartDialogue(startDialogueID);
+            SingletonManagers.Dialogue.OnDialogueEnd += HandleDialogueEnd;
         }
         else
         {
@@ -45,11 +45,11 @@ public class NPCController : MonoBehaviour
 
     private void HandleDialogueEnd()
     {
-        Managers.Dialogue.OnDialogueEnd -= HandleDialogueEnd;
+        SingletonManagers.Dialogue.OnDialogueEnd -= HandleDialogueEnd;
 
         OnDialogueEndEvent?.Invoke();
 
-        Managers.Input.SetInputModeUI(false);
+        SingletonManagers.Input.SetInputModeUI(false);
 
         _isInteracting = false; // 대화 상태 해제
     }
@@ -59,7 +59,7 @@ public class NPCController : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             _isPlayerInRange = true;
-            Managers.Input.OnInteractPressed += Interact;
+            SingletonManagers.Input.OnInteractPressed += Interact;
             Debug.Log($"[NPCController] {npcName}에게 상호작용 가능");
         }
     }
@@ -69,7 +69,7 @@ public class NPCController : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             _isPlayerInRange = false;
-            Managers.Input.OnInteractPressed -= Interact;
+            SingletonManagers.Input.OnInteractPressed -= Interact;
             Debug.Log($"[NPCController] {npcName}에게 상호작용 불가능");
         }
     }

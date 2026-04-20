@@ -17,12 +17,12 @@ public class BattleTestButton : MonoBehaviour
             playerWorldPosition = Vector3.zero
         };
 
-        Managers.Battle.StartBattle(request);
+        SingletonManagers.Battle.StartBattle(request);
     }
 
     public void EndDebugBattle()
     {
-        Managers.Battle.FinishBattle(BattleResult.Escape);
+        SingletonManagers.Battle.FinishBattle(BattleResult.Escape);
     }
 
     private void Update()

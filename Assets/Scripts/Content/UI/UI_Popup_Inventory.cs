@@ -38,12 +38,12 @@ public class UI_Popup_Inventory : UI_Popup
         }
 
         foreach (Transform child in _gridParent)
-            Managers.Resource.Destroy(child.gameObject);
+            SingletonManagers.Resource.Destroy(child.gameObject);
         _itemSlots.Clear();
 
         for (int i = 0; i < _pageSize; i++)
         {
-            GameObject go = Managers.Resource.Instantiate("UI/Element/UI_Element_ItemSlot", _gridParent);
+            GameObject go = SingletonManagers.Resource.Instantiate("UI/Element/UI_Element_ItemSlot", _gridParent);
             _itemSlots.Add(go.GetComponent<UI_Element_ItemSlot>());
         }
 
@@ -152,7 +152,7 @@ public class UI_Popup_Inventory : UI_Popup
     public override void OnCancel() // 취소/닫기(esc) 로직
     {
         if (!_canInput) return;
-        Managers.UI.ClosePopupUI(this);
+        SingletonManagers.UI.ClosePopupUI(this);
     }
 
     private IEnumerator CoInitCursorPosition()

@@ -108,7 +108,7 @@ public class UI_Popup_Select : UI_Popup
             {
                 _isAnimating = false;
 
-                Managers.UI.ClosePopupUI(this);
+                SingletonManagers.UI.ClosePopupUI(this);
                 onComplete?.Invoke();
             })
             .SetUpdate(true);

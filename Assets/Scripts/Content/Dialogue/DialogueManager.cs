@@ -230,7 +230,7 @@ public class DialogueManager : IManager
 
         if (_currentPopup == null)
         {
-            _currentPopup = Managers.UI.ShowPopupUI<UI_Popup_Dialogue>("UI_Popup_Dialogue");
+            _currentPopup = SingletonManagers.UI.ShowPopupUI<UI_Popup_Dialogue>("UI_Popup_Dialogue");
         }
 
         if (!_currentPopup.gameObject.activeSelf)
@@ -255,7 +255,7 @@ public class DialogueManager : IManager
             if (_currentPopup != null) _currentPopup.gameObject.SetActive(false);
 
             // 입력 팝업 띄우기
-            var inputPopup = Managers.UI.ShowPopupUI<UI_Popup_Input>("UI_Popup_Input");
+            var inputPopup = SingletonManagers.UI.ShowPopupUI<UI_Popup_Input>("UI_Popup_Input");
             inputPopup.Setup((inputValue) => 
             {
                 // 유저가 입력을 마치고 확인을 누르면 실행됨
@@ -278,7 +278,7 @@ public class DialogueManager : IManager
                 _currentPopup.gameObject.SetActive(false);
             }
 
-            _currentSelectPopup = Managers.UI.ShowPopupUI<UI_Popup_Select>("UI_Popup_Select");
+            _currentSelectPopup = SingletonManagers.UI.ShowPopupUI<UI_Popup_Select>("UI_Popup_Select");
             _currentSelectPopup.Setup(_currentDialogue.Choices.ToArray(), OnChoiceSelected);
             return;
         }
@@ -329,7 +329,7 @@ public class DialogueManager : IManager
             }
             else if (_currentPopup == null)
             {
-                _currentPopup = Managers.UI.ShowPopupUI<UI_Popup_Dialogue>("UI_Popup_Dialogue");
+                _currentPopup = SingletonManagers.UI.ShowPopupUI<UI_Popup_Dialogue>("UI_Popup_Dialogue");
             
             }
             _currentPopup.SetDialogue(_currentDialogue);
@@ -368,13 +368,13 @@ public class DialogueManager : IManager
     {
         if (_currentSelectPopup != null)
         {
-            Managers.UI.ClosePopupUI(_currentSelectPopup);
+            SingletonManagers.UI.ClosePopupUI(_currentSelectPopup);
             _currentSelectPopup = null;
         }
 
         if (_currentPopup != null)
         {
-            Managers.UI.ClosePopupUI(_currentPopup);
+            SingletonManagers.UI.ClosePopupUI(_currentPopup);
             _currentPopup = null;
         }
 
