@@ -7,6 +7,8 @@ public class UIManager : IManager
     private int _order = 10;
     private Stack<UI_Popup> _popupStack = new Stack<UI_Popup>();
     private UI_Scene _sceneUI = null;
+    private UI_Popup_Fade _fade = null;
+    private const int FadeSortOrder = 9999;
 
     public int PopupCount => _popupStack.Count;
     private GameObject _root;
@@ -79,11 +81,11 @@ public class UIManager : IManager
 
         if (_sceneUI != null)
         {
-            Managers.Resource.Destroy(_sceneUI.gameObject);
+            SingletonManagers.Resource.Destroy(_sceneUI.gameObject);
             _sceneUI = null;
         }
 
-        GameObject go = Managers.Resource.Instantiate($"UI/Scene/{name}", Root.transform);
+        GameObject go = SingletonManagers.Resource.Instantiate($"UI/Scene/{name}", Root.transform);
 
         if (go == null)
         {
@@ -104,7 +106,7 @@ public class UIManager : IManager
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
 
-        GameObject go = Managers.Resource.Instantiate($"UI/Popup/{name}", Root.transform);
+        GameObject go = SingletonManagers.Resource.Instantiate($"UI/Popup/{name}", Root.transform);
 
         if (go == null)
         {
@@ -146,7 +148,7 @@ public class UIManager : IManager
 
         UI_Popup popup = _popupStack.Pop();
 
-        Managers.Resource.Destroy(popup.gameObject);
+        SingletonManagers.Resource.Destroy(popup.gameObject);
 
         popup = null;
         _order--;
@@ -160,17 +162,41 @@ public class UIManager : IManager
         }
     }
 
+    /// <summary>
+    /// 씬 전체에서 단 하나만 존재하는 Fade UI를 반환한다. 없으면 생성한다.
+    /// 팝업 스택에는 포함되지 않으며, 항상 최상단(SortOrder 9999)에 고정된다.
+    /// </summary>
+    public UI_Popup_Fade GetFade()
+    {
+        if (_fade != null) return _fade;
+
+        GameObject go = SingletonManagers.Resource.Instantiate("UI/Popup/UI_Popup_Fade", Root.transform);
+        if (go == null)
+        {
+            Debug.LogError("[UIManager] UI_Popup_Fade 로드에 실패했습니다.");
+            return null;
+        }
+
+        _fade = Util.GetOrAddComponent<UI_Popup_Fade>(go);
+        SetCanvas(go, false, FadeSortOrder); // 항상 최상단 고정
+        _order--;
+        return _fade;
+    }
+
     public void Clear()
     {
         CloseAllPopupUI();
+
+        if (_fade != null)
+        {
+            SingletonManagers.Resource.Destroy(_fade.gameObject);
+            _fade = null;
+        }
+
         _sceneUI = null;
         _root = null;
         _order = 10;
     }
 
-    public void OnDestroy()
-    {
-        _popupStack = null;
-        _sceneUI = null;
-    }
+    public void OnDestroy() => Clear();
 }

@@ -12,15 +12,9 @@ public class StoryManager : IManager
     {
         if (_init) return;
         _init = true;
-
-        RegisterCommands();
     }
 
-    public void Clear()
-    {
-        StopStory();
-    }
-
+    public void Clear() { }
     public void OnDestroy()
     {
         UnregisterCommands();
@@ -84,7 +78,7 @@ public class StoryManager : IManager
         _runner.RemoveCommandHandler("fade_out");
     }
 
-    /// <<fade_in 1.0>>  — 화면 페이드 인
+    /// 화면 페이드 인
     private IEnumerator CmdFadeIn(float duration)
     {
         bool done = false;
@@ -92,7 +86,7 @@ public class StoryManager : IManager
         yield return new WaitUntil(() => done);
     }
 
-    /// <<fade_out 1.0>>  — 화면 페이드 아웃
+    /// 화면 페이드 아웃
     private IEnumerator CmdFadeOut(float duration)
     {
         bool done = false;
