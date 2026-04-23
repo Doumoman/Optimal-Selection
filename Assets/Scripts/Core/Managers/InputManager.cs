@@ -10,11 +10,12 @@ public class InputManager : IManager
     // 이벤트 선언
     public event Action OnMenuPressed;       // 메뉴 열기
     public event Action OnInteractPressed;   // 상호작용
+    public event Action OnJumpPressed;       // 점프
     public event Action<Vector2> OnMove;     // 플레이어 이동
-    public event Action OnSneakPressed;      // 플레이어 숙이기
+
     public event Action<Vector2> OnInput;    // UI 이동
-    public event Action OnSubmitPressed;     // 확인 (Enter)
-    public event Action OnCancelPressed;     // 취소 (Esc)
+    public event Action OnUISubmitPressed;     // 확인 (Enter)
+    public event Action OnUICancelPressed;     // 취소 (Esc)
 
     public Vector2 MoveDirection => _controls?.GamePlay.Move.ReadValue<Vector2>() ?? Vector2.zero;
 
@@ -29,7 +30,6 @@ public class InputManager : IManager
         _controls.GamePlay.Interact.performed += HandleInteractPerformed;
         _controls.GamePlay.Move.performed += HandleMovePerformed;
         _controls.GamePlay.Move.canceled += HandleMoveCanceled;
-        _controls.GamePlay.Sneak.performed += HandleSneakPerformed;
 
         _controls.UI.Input.performed += HandleUIInputPerformed;
         _controls.UI.Submit.performed += HandleSubmitPerformed;
@@ -73,10 +73,9 @@ public class InputManager : IManager
         OnMenuPressed = null;
         OnInteractPressed = null;
         OnMove = null;
-        OnSneakPressed = null;
         OnInput = null;
-        OnSubmitPressed = null;
-        OnCancelPressed = null;
+        OnUISubmitPressed = null;
+        OnUICancelPressed = null;
     }
 
     public void OnDestroy()
@@ -88,7 +87,6 @@ public class InputManager : IManager
             _controls.GamePlay.Interact.performed -= HandleInteractPerformed;
             _controls.GamePlay.Move.performed -= HandleMovePerformed;
             _controls.GamePlay.Move.canceled -= HandleMoveCanceled;
-            _controls.GamePlay.Sneak.performed -= HandleSneakPerformed;
 
             _controls.UI.Input.performed -= HandleUIInputPerformed;
             _controls.UI.Submit.performed -= HandleSubmitPerformed;
@@ -110,11 +108,10 @@ public class InputManager : IManager
     private void HandleInteractPerformed(InputAction.CallbackContext context) => OnInteractPressed?.Invoke();
     private void HandleMovePerformed(InputAction.CallbackContext context) => OnMove?.Invoke(context.ReadValue<Vector2>());
     private void HandleMoveCanceled(InputAction.CallbackContext context) => OnMove?.Invoke(Vector2.zero);
-    private void HandleSneakPerformed(InputAction.CallbackContext context) => OnSneakPressed?.Invoke();
 
     private void HandleUIInputPerformed(InputAction.CallbackContext context) => OnInput?.Invoke(context.ReadValue<Vector2>());
-    private void HandleSubmitPerformed(InputAction.CallbackContext context) => OnSubmitPressed?.Invoke();
-    private void HandleCancelPerformed(InputAction.CallbackContext context) => OnCancelPressed?.Invoke();
+    private void HandleSubmitPerformed(InputAction.CallbackContext context) => OnUISubmitPressed?.Invoke();
+    private void HandleCancelPerformed(InputAction.CallbackContext context) => OnUICancelPressed?.Invoke();
 
     #endregion
 }

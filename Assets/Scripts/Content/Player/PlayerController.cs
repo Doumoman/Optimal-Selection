@@ -40,9 +40,6 @@ public class PlayerController : MonoBehaviour
 
         SingletonManagers.Input.OnMove -= HandleGamePlayMove;
         SingletonManagers.Input.OnMove += HandleGamePlayMove;
-
-        SingletonManagers.Input.OnSneakPressed -= HandleGamePlaySneak;
-        SingletonManagers.Input.OnSneakPressed += HandleGamePlaySneak;
     }
 
     // Update is called once per frame

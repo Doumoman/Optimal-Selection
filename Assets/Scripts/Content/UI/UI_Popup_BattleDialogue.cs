@@ -29,7 +29,7 @@ public class UI_Popup_BattleDialogue : UI_Popup
     {
         if (SingletonManagers.Input != null)
         {
-            SingletonManagers.Input.OnSubmitPressed += OnSubmitPressed;
+            SingletonManagers.Input.OnUISubmitPressed += OnSubmitPressed;
             SingletonManagers.Input.OnInteractPressed += OnSubmitPressed;
         }
     }
@@ -38,7 +38,7 @@ public class UI_Popup_BattleDialogue : UI_Popup
     {
         if (SingletonManagers.Input != null)
         {
-            SingletonManagers.Input.OnSubmitPressed -= OnSubmitPressed;
+            SingletonManagers.Input.OnUISubmitPressed -= OnSubmitPressed;
             SingletonManagers.Input.OnInteractPressed -= OnSubmitPressed;
         }
     }

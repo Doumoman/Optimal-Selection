@@ -101,7 +101,7 @@ public class UI_BattleEnemySpeech : MonoBehaviour
     {
         if (SingletonManagers.Input != null)
         {
-            SingletonManagers.Input.OnSubmitPressed += OnSubmitPressed;
+            SingletonManagers.Input.OnUISubmitPressed += OnSubmitPressed;
             SingletonManagers.Input.OnInteractPressed += OnSubmitPressed;
         }
     }
@@ -110,7 +110,7 @@ public class UI_BattleEnemySpeech : MonoBehaviour
     {
         if (SingletonManagers.Input != null)
         {
-            SingletonManagers.Input.OnSubmitPressed -= OnSubmitPressed;
+            SingletonManagers.Input.OnUISubmitPressed -= OnSubmitPressed;
             SingletonManagers.Input.OnInteractPressed -= OnSubmitPressed;
         }
     }

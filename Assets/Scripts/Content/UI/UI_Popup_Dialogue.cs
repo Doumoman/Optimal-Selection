@@ -33,7 +33,7 @@ public class UI_Popup_Dialogue : UI_Popup
     {
         if (SingletonManagers.Input != null)
         {
-            SingletonManagers.Input.OnSubmitPressed += SkipCurrentDialogue; // 엔터키
+            SingletonManagers.Input.OnUISubmitPressed += SkipCurrentDialogue; // 엔터키
             SingletonManagers.Input.OnInteractPressed += SkipCurrentDialogue; // 스페이스키
         }
     }
@@ -42,7 +42,7 @@ public class UI_Popup_Dialogue : UI_Popup
     {
         if (SingletonManagers.Input != null)
         {
-            SingletonManagers.Input.OnSubmitPressed -= SkipCurrentDialogue;
+            SingletonManagers.Input.OnUISubmitPressed -= SkipCurrentDialogue;
             SingletonManagers.Input.OnInteractPressed -= SkipCurrentDialogue;
         }
     }

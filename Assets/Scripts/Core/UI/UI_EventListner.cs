@@ -14,11 +14,11 @@ public class UI_EventListener : MonoBehaviour
         SingletonManagers.Input.OnInput -= HandleUIInput;
         SingletonManagers.Input.OnInput += HandleUIInput;
 
-        SingletonManagers.Input.OnSubmitPressed -= HandleUISubmit;
-        SingletonManagers.Input.OnSubmitPressed += HandleUISubmit;
+        SingletonManagers.Input.OnUISubmitPressed -= HandleUISubmit;
+        SingletonManagers.Input.OnUISubmitPressed += HandleUISubmit;
 
-        SingletonManagers.Input.OnCancelPressed -= HandleUICancel;
-        SingletonManagers.Input.OnCancelPressed += HandleUICancel;
+        SingletonManagers.Input.OnUICancelPressed -= HandleUICancel;
+        SingletonManagers.Input.OnUICancelPressed += HandleUICancel;
     }
 
     private IEnumerator IgnoreInputForMoment()
