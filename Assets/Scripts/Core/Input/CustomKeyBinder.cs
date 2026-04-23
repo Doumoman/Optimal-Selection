@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class KeyBinder : MonoBehaviour
+public class CustomKeyBinder : MonoBehaviour
 {
     [Header("Input Action")]
     public InputActionReference gemAction; // 보석 키 (기본 Z)

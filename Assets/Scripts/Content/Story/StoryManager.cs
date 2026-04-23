@@ -5,8 +5,15 @@ using Yarn.Unity;
 
 public class StoryManager : IManager
 {
+    private const string FADE_IN = "fade_in";
+    private const string FADE_OUT = "fade_out";
+    private const string WAIT_FOR_INTERACTION = "wait_for_interaction";
+
     private DialogueRunner _runner;
     private bool _init = false;
+
+    private string _waitingInteractionName = String.Empty;
+    private bool _isInteractionCompleted = false;
 
     public void Init()
     {
@@ -63,8 +70,9 @@ public class StoryManager : IManager
     {
         if (_runner == null) return;
 
-        _runner.AddCommandHandler("fade_in",    (System.Func<float, IEnumerator>)  CmdFadeIn);
-        _runner.AddCommandHandler("fade_out",   (System.Func<float, IEnumerator>)  CmdFadeOut);
+        _runner.AddCommandHandler(FADE_IN,    (System.Func<float, IEnumerator>)  CmdFadeIn);
+        _runner.AddCommandHandler(FADE_OUT,   (System.Func<float, IEnumerator>)  CmdFadeOut);
+        _runner.AddCommandHandler(WAIT_FOR_INTERACTION, (System.Func<string, IEnumerator>) CmdWaitForInteraction);
 
         // TODO: 게임 전용 커맨드 등록
         // _runner.AddCommandHandler("커맨드명", (Action<파라미터타입>) CmdXxx);
@@ -74,24 +82,52 @@ public class StoryManager : IManager
     {
         if (_runner == null) return;
 
-        _runner.RemoveCommandHandler("fade_in");
-        _runner.RemoveCommandHandler("fade_out");
+        _runner.RemoveCommandHandler(FADE_IN);
+        _runner.RemoveCommandHandler(FADE_OUT);
+        _runner.RemoveCommandHandler(WAIT_FOR_INTERACTION);
+
+        // TODO: 게임 전용 커맨드 해제
+        // _runner.RemoveCommandHandler("커맨드 명");
     }
 
-    /// 화면 페이드 인
-    private IEnumerator CmdFadeIn(float duration)
+    #region Yarn Spinner에서 사용할 커맨드 함수들
+    private IEnumerator CmdFadeIn(float duration) // 화면 페이드 인
     {
         bool done = false;
         SingletonManagers.UI.GetFade().FadeIn(duration, () => done = true);
         yield return new WaitUntil(() => done);
     }
 
-    /// 화면 페이드 아웃
-    private IEnumerator CmdFadeOut(float duration)
+    private IEnumerator CmdFadeOut(float duration) // 화면 페이드 아웃
     {
         bool done = false;
         SingletonManagers.UI.GetFade().FadeOut(duration, () => done = true);
         yield return new WaitUntil(() => done);
+    }
+
+    private IEnumerator CmdWaitForInteraction(string interactionName) // 대화 도중 특정 상호작용을 수행할 때 까지 대화 멈춤
+    {
+        _waitingInteractionName = interactionName;
+        _isInteractionCompleted = false;
+
+        yield return new WaitUntil(() => _isInteractionCompleted); // 상호작용이 끝날 때 까지 대기
+
+        _waitingInteractionName = string.Empty;
+        _isInteractionCompleted = false;
+    }
+
+    #endregion
+
+    /// <summary>
+    /// 외부에서 특정 상호작용에 성공하면 이름과 함께 호출
+    /// </summary>
+    public void NotifyInteractionCompleted(string interactionName)
+    {
+        // 현재 스토리가 기다리고 있는 상호작용 이름과 일치한다면 
+        if (_waitingInteractionName == interactionName)
+        {
+            _isInteractionCompleted = true;
+        }
     }
 
     public Coroutine RunCoroutine(IEnumerator routine)
