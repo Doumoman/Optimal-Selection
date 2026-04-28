@@ -1,4 +1,4 @@
-﻿title: Tutorial_Fisher
+﻿title: Tutorial_Narration
 ---
 세상엔, 다양한 별들이 있대요. #line:0054912 
 별들은 저마다 자기 방식으로 빛난대요. #line:0159c06 
@@ -9,6 +9,11 @@
 <<fade_out 1.5>>
 <<fade_in 1.5>>
 
+<<jump Tutorial_Fisher>>
+===
+
+title: Tutorial_Fisher
+---
 주인공: 아저씨는… 아저씨가 어떤 사람이라고 생각해요? #line:0bbd4f0 
 
 낚시꾼: … #line:096d566 
