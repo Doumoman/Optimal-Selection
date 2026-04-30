@@ -15,6 +15,7 @@ public class InputManager : IManager
     public event Action OnSneakPressed; // 엎드리기
     public event Action OnSneakReleased; // 엎드리기 키 해제
     public event Action<Vector2> OnMove; // 플레이어 이동
+    public event Action<Vector2> OnLadderMove; // 플레이어 사다리 이동
 
     // ㅡㅡㅡㅡㅡ UI Action Map ㅡㅡㅡㅡㅡ
     public event Action<Vector2> OnInput; // UI 이동
@@ -22,6 +23,7 @@ public class InputManager : IManager
     public event Action OnUICancelPressed; // 취소 (Esc)
 
     public Vector2 MoveDirection => _controls?.GamePlay.Move.ReadValue<Vector2>() ?? Vector2.zero;
+    public Vector2 LadderMoveDirection => _controls?.GamePlay.LadderMove.ReadValue<Vector2>() ?? Vector2.zero;
 
     public void Init()
     {
@@ -36,6 +38,9 @@ public class InputManager : IManager
 
         _controls.GamePlay.Move.performed += HandleMovePerformed;
         _controls.GamePlay.Move.canceled += HandleMoveCanceled;
+
+        _controls.GamePlay.LadderMove.performed += HandleLadderMovePerformed;
+        _controls.GamePlay.LadderMove.canceled += HandleLadderMoveCanceled;
 
         _controls.GamePlay.Jump.performed += HandleJumpPerformed;
         _controls.GamePlay.Jump.canceled += HandleJumpCanceled;
@@ -91,6 +96,7 @@ public class InputManager : IManager
         OnSneakPressed = null;
         OnSneakReleased = null;
         OnMove = null;
+        OnLadderMove = null;
         OnInput = null;
         OnUISubmitPressed = null;
         OnUICancelPressed = null;
@@ -106,6 +112,9 @@ public class InputManager : IManager
 
             _controls.GamePlay.Move.performed -= HandleMovePerformed;
             _controls.GamePlay.Move.canceled -= HandleMoveCanceled;
+
+            _controls.GamePlay.LadderMove.performed += HandleLadderMovePerformed;
+            _controls.GamePlay.LadderMove.canceled += HandleLadderMoveCanceled;
 
             _controls.GamePlay.Jump.performed -= HandleJumpPerformed;
             _controls.GamePlay.Jump.canceled -= HandleJumpCanceled;
@@ -142,6 +151,9 @@ public class InputManager : IManager
 
     private void HandleMovePerformed(InputAction.CallbackContext context) => OnMove?.Invoke(context.ReadValue<Vector2>());
     private void HandleMoveCanceled(InputAction.CallbackContext context) => OnMove?.Invoke(Vector2.zero);
+
+    private void HandleLadderMovePerformed(InputAction.CallbackContext context) => OnLadderMove?.Invoke(context.ReadValue<Vector2>());
+    private void HandleLadderMoveCanceled(InputAction.CallbackContext context) => OnLadderMove?.Invoke(Vector2.zero);
 
     // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ UI Action Map ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
     private void HandleUIInputPerformed(InputAction.CallbackContext context) => OnInput?.Invoke(context.ReadValue<Vector2>());

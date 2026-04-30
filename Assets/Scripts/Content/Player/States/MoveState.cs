@@ -26,7 +26,7 @@ public class MoveState : PlayerBaseState
         }
 
         // 사다리 감지 + 윗 방향키 -> LadderState
-        if (data.isNearLadder && Mathf.Abs(data.moveInput.y) > 0.001f)
+        if (data.isNearLadder && data.MoveVerticalInput.y > 0.001f)
         {
             fsm.TransitionTo(fsm.LadderState);
             return;
@@ -47,7 +47,7 @@ public class MoveState : PlayerBaseState
         }
 
         // 이동 처리
-        float targetVel = data.moveInput.x * data.moveSpeed;
+        float targetVel = data.moveHorizontalInput.x * data.moveSpeed;
         fsm.SetVelocity(targetVel, 0f); // x축에 대해서만 이동
 
 

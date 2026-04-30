@@ -36,7 +36,7 @@ public class SneakMoveState : PlayerBaseState
 
 
         // 이동 처리, SneakSpeed 사용
-        float horizontalVel = data.moveInput.x * data.sneakSpeed;
+        float horizontalVel = data.moveHorizontalInput.x * data.sneakSpeed;
         fsm.SetVelocity(horizontalVel, 0f);
 
         // ── 애니메이션 ──

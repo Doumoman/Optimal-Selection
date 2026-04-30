@@ -23,7 +23,8 @@ public class PlayerData
     public LayerMask hangerLayer;
 
     // ── 런타임 상태 ──
-    public Vector2 moveInput; // 입력받은 이동방향
+    public Vector2 moveHorizontalInput; // 입력받은 좌우 이동 방향
+    public Vector2 MoveVerticalInput; // 입력받은 상하 이동 방향
     public bool jumpRequested; // 점프 요구
     public bool isJumpHeld;   // 점프 키 홀드 중
     public bool isSneakHeld; // 엎드리기 키 홀드 중

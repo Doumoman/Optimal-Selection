@@ -33,12 +33,12 @@ public abstract class PlayerBaseState
 
         if (state == fsm.MoveState)
         {
-            bool isMoving = Mathf.Abs(data.moveInput.x) > 0.01f;
+            bool isMoving = Mathf.Abs(data.moveHorizontalInput.x) > 0.01f;
             // TODO : 방향에 따른 애니메이션 출력
         }
         else if (state == fsm.SneakMoveState)
         {
-            bool isMoving = Mathf.Abs(data.moveInput.x) > 0.01f;
+            bool isMoving = Mathf.Abs(data.moveHorizontalInput.x) > 0.01f;
             // TODO : 방향에 따른 애니메이션 출력
 
         }

@@ -51,6 +51,9 @@ public class PlayerFSM : MonoBehaviour
         SingletonManagers.Input.OnMove -= HandleMoveInput;
         SingletonManagers.Input.OnMove += HandleMoveInput;
 
+        SingletonManagers.Input.OnLadderMove -= HandleLadderMoveInput;
+        SingletonManagers.Input.OnLadderMove += HandleLadderMoveInput;
+
         SingletonManagers.Input.OnJumpPressed -= HandleJump;
         SingletonManagers.Input.OnJumpPressed += HandleJump;
 
@@ -79,13 +82,14 @@ public class PlayerFSM : MonoBehaviour
 
         // 지면 감지 (전이 판정 전에 갱신)
         CheckGround();
+        CheckLadder();
 
         // lastDir 갱신 및 스프라이트 좌우 플리핑
-        if (_playerData.moveInput != Vector2.zero)
+        if (_playerData.moveHorizontalInput != Vector2.zero)
         {
-            lastDir = _playerData.moveInput;
+            lastDir = _playerData.moveHorizontalInput;
             Vector2 scale = transform.localScale;
-            scale.x = _playerData.moveInput.x > 0 ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
+            scale.x = _playerData.moveHorizontalInput.x > 0 ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
             transform.localScale = scale;
         }
 
@@ -203,21 +207,16 @@ public class PlayerFSM : MonoBehaviour
         _playerData.isGrounded = false;
     }
 
-    // ── 사다리 트리거 감지 ──
-    private void OnTriggerEnter2D(Collider2D other)
+    // ── 사다리 감지 ──
+    private void CheckLadder()
     {
-        if (other.gameObject.layer == _playerData.ladderLayer)
-            _playerData.isNearLadder = true;
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.layer != _playerData.ladderLayer)
-            _playerData.isNearLadder = false;
+        Vector2 center = (Vector2)transform.position + Bc.offset;
+        _playerData.isNearLadder = Physics2D.OverlapPoint(center, _playerData.ladderLayer);
     }
 
     // ── 입력 핸들러 ──
-    private void HandleMoveInput(Vector2 dir) => _playerData.moveInput = dir;
+    private void HandleMoveInput(Vector2 dir) => _playerData.moveHorizontalInput = dir;
+    private void HandleLadderMoveInput(Vector2 dir) => _playerData.MoveVerticalInput = dir;
     private void HandleJump()
     {
         _playerData.jumpRequested = true;
@@ -232,6 +231,7 @@ public class PlayerFSM : MonoBehaviour
         if (SingletonManagers.Input == null) return;
 
         SingletonManagers.Input.OnMove -= HandleMoveInput;
+        SingletonManagers.Input.OnLadderMove -= HandleLadderMoveInput;
 
         SingletonManagers.Input.OnJumpPressed -= HandleJump;
         SingletonManagers.Input.OnJumpReleased -= HandleJumpReleased;

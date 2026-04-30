@@ -16,13 +16,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Menu",
-                    "type": "Button",
-                    "id": "d9edf14c-6959-40d4-aaf5-42386c6d45eb",
-                    "expectedControlType": "",
+                    "name": "LadderMove",
+                    "type": "Value",
+                    "id": "d9c6cc5b-8b5a-4761-ae2b-fbafa38a5614",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Interact",
@@ -50,6 +50,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "d9edf14c-6959-40d4-aaf5-42386c6d45eb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -129,6 +138,39 @@
                     "action": "Sneak",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "7e1a2fa4-cec6-4267-83bd-17a35ed12f85",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LadderMove",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "667ebd32-2066-45d7-be6c-da7a23f1ca5b",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LadderMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "a1a8bb8b-b372-4609-b478-0a6027f5be57",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LadderMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },

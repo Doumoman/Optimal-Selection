@@ -40,7 +40,7 @@ public class AirborneState : PlayerBaseState
 
         vel.y += effectiveGravity * Time.deltaTime;
         vel.y = Mathf.Max(vel.y, data.maxFallSpeed);
-        vel.x = data.moveInput.x * data.moveSpeed;
+        vel.x = data.moveHorizontalInput.x * data.moveSpeed;
 
         fsm.SetVelocity(vel.x, vel.y);
 
@@ -51,8 +51,8 @@ public class AirborneState : PlayerBaseState
             return;
         }
 
-        // 사다리 + 세로 입력 → LadderState
-        if (data.isNearLadder && Mathf.Abs(data.moveInput.y) > 0.001f)
+        // 사다리 감지 + 위 방향키 입력 → LadderState
+        if (data.isNearLadder && data.MoveVerticalInput.y > 0.001f)
         {
             fsm.TransitionTo(fsm.LadderState);
             return;
