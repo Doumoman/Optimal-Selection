@@ -5,7 +5,7 @@ public class ChapterSceneBinder : MonoBehaviour
 {
     [SerializeField] private Transform chapterRoot;
     [SerializeField] private Transform mapRoot;
-    [SerializeField] private PlayerController playerController;
+    [SerializeField] private PlayerFSM playerFSM;
     [SerializeField] private Transform chapterUIRoot;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private ChapterManager chapterManager;
@@ -19,7 +19,7 @@ public class ChapterSceneBinder : MonoBehaviour
         {
             chapterRoot = chapterRoot,
             mapRoot = mapRoot,
-            playerController = playerController,
+            playerFSM = playerFSM,
             chapterUIRoot = chapterUIRoot,
             mainCamera = mainCamera,
             chapterManager = chapterManager

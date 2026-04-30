@@ -5,7 +5,7 @@ public class ChapterSceneRefs
 {
     public Transform chapterRoot;
     public Transform mapRoot;
-    public PlayerController playerController;
+    public PlayerFSM playerFSM;
     public Transform chapterUIRoot;
     public Camera mainCamera;
     public ChapterManager chapterManager;

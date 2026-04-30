@@ -97,7 +97,7 @@ public class MapManager : IManager
             CurrentMap.SetActive(true);
  
             TeleportPlayerToPortal(entryDirection); // 플레이어 순간이동
-            SnapCameraToPlayer(_sceneRefs.playerController.gameObject); // 카메라 순간이동
+            SnapCameraToPlayer(_sceneRefs.playerFSM.gameObject); // 카메라 순간이동
         }
         else
         {
@@ -148,7 +148,7 @@ public class MapManager : IManager
     /// </summary>
     public void TeleportPlayerToPortal(MapPortal.PortalDirection entryDirection)
     {
-        PlayerController player = _sceneRefs.playerController;
+        PlayerFSM player = _sceneRefs.playerFSM;
         if (player == null)
         {
             Debug.LogWarning("[MapManager] 씬에 Player 태그를 가진 오브젝트가 없습니다!");

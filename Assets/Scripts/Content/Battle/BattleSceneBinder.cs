@@ -4,7 +4,7 @@ public class BattleSceneBinder : MonoBehaviour
 {
     [SerializeField] private GameObject battleRoot;
     [SerializeField] private GameObject battleUIRoot;
-    [SerializeField] private PlayerController playerController;
+    [SerializeField] private PlayerFSM playerFSM;
     [SerializeField] private UI_BattleEnemySpeech enemySpeechUI;
     [SerializeField] private PatternRunner patternRunner;
     [SerializeField] private BattleFieldView battleFieldView;
@@ -16,7 +16,7 @@ public class BattleSceneBinder : MonoBehaviour
         {
             battleRoot = battleRoot,
             battleUIRoot = battleUIRoot,
-            playerController = playerController,
+            playerFSM = playerFSM,
             enemySpeechUI = enemySpeechUI,
             patternRunner = patternRunner,
             battleFieldView = battleFieldView

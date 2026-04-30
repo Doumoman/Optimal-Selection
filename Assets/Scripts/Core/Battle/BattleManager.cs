@@ -287,7 +287,7 @@ public class BattleManager : IManager
 
     private void PrepareWorldForBattle(BattleStartRequest request)
     {
-        if (_sceneRefs != null && _sceneRefs.playerController != null && request.lockWorldInput)
+        if (_sceneRefs != null && _sceneRefs.playerFSM != null && request.lockWorldInput)
         {
             // _sceneRefs.playerController.SetInputLock(true);
         }
@@ -295,7 +295,7 @@ public class BattleManager : IManager
 
     private void RestoreWorldAfterBattle(BattleResult result)
     {
-        if (_sceneRefs != null && _sceneRefs.playerController != null)
+        if (_sceneRefs != null && _sceneRefs.playerFSM != null)
         {
             // _sceneRefs.playerController.SetInputLock(false);
         }

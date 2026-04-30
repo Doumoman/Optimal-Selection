@@ -5,7 +5,7 @@ public class BattleSceneRefs
 {
     public GameObject battleRoot;
     public GameObject battleUIRoot;
-    public PlayerController playerController;
+    public PlayerFSM playerFSM;
     public UI_BattleEnemySpeech enemySpeechUI;
     public PatternRunner patternRunner;
     public BattleFieldView battleFieldView;
