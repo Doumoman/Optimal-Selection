@@ -1,66 +1,65 @@
 ﻿using UnityEngine;
+
 /// <summary>
-/// 샘플용 상태머신
+/// 플레이어 FSM 상태 추상 기반 클래스.
 /// </summary>
 public abstract class PlayerBaseState
 {
-    protected PlayerController playerContext;
+    protected PlayerFSM fsm;
+    protected PlayerData data;
+    protected Animator anim;
 
-    public PlayerBaseState(PlayerController playerContext) {  this.playerContext = playerContext; }
-    public abstract void Enter(); // 상태 진입 시 1회 실행
-    public abstract void Update(); // 매 프레임마다 실행
-    public abstract void Exit(); // 상태 종료 시 1회 실행
+    public PlayerBaseState(PlayerFSM fsm)
+    {
+        this.fsm = fsm;
+        data = fsm.PlayerData;
+        anim = fsm.Anim;
+    }
+
+    public abstract void Enter();
+    public abstract void Update();
+    public abstract void Exit();
+
+    protected void PlayClip(string clipName)
+    {
+        if (!string.IsNullOrEmpty(clipName))
+            anim.Play(clipName);
+    }
 
     protected void PlayAnimation(PlayerBaseState state)
     {
-        int dirIndex = playerContext.GetDirectionIndex();
+        int dir = fsm.GetDirectionIndex();
         string clip = null;
 
-        if (state == playerContext.idleState)
+        if (state == fsm.MoveState)
         {
-            clip = dirIndex switch
-            {
-                0 => "Idle_Back",
-                1 => "Idle_Front",
-                _ => "Idle_Side"
-            };
+            bool isMoving = Mathf.Abs(data.moveInput.x) > 0.01f;
+            // TODO : 방향에 따른 애니메이션 출력
         }
-
-        if (state == playerContext.sneakState)
+        else if (state == fsm.SneakMoveState)
         {
-            clip = dirIndex switch
-            {
-                0 => "Sneak_Back",
-                1 => "Sneak_Front",
-                _ => "Sneak_Side"
-            };
-        }
-
-        if (state == playerContext.sneakMoveState)
-        {
-            clip = dirIndex switch
-            {
-                0 => "SneakMove_Back",
-                1 => "SneakMove_Front",
-                _ => "SneakMove_Side"
-            };
-        }
-
-        if (state == playerContext.walkState)
-        {
-            clip = dirIndex switch
-            {
-                0 => "Walk_Back",
-                1 => "Walk_Front",
-                _ => "Walk_Side"
-            };
-        }
-
-        if (state == playerContext.specialState)
-        {
+            bool isMoving = Mathf.Abs(data.moveInput.x) > 0.01f;
+            // TODO : 방향에 따른 애니메이션 출력
 
         }
+        else if (state == fsm.AirborneState) { clip = AnimClips.Airborne; }
+        else if (state == fsm.LadderState) { clip = AnimClips.Ladder; }
+        else if (state == fsm.KilledState) { clip = AnimClips.Death; }
 
-        playerContext.anim.Play(clip); // 애니메이션 실행
+        if (!string.IsNullOrEmpty(clip))
+            anim.Play(clip);
     }
+}
+
+public static class AnimClips
+{
+    public const string Idle = "Idle";
+    public const string Walk = "Walk";
+    public const string Jump = "Jump";
+    public const string Airborne = "Airborne";
+    public const string Hanging = "Hanging";
+    public const string SneakIdle = "SneakIdle";
+    public const string SneakWalk = "SneakWalk";
+    public const string Ladder = "Ladder";
+    public const string Death = "Death";
 }
