@@ -40,7 +40,7 @@ public class MoveState : PlayerBaseState
         }
 
         // 아래 방향키 -> SneakMoveState
-        if (data.sneakToggled)
+        if (data.isSneakHeld)
         {
             fsm.TransitionTo(fsm.SneakMoveState);
             return;

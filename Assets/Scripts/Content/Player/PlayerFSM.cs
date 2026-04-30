@@ -124,8 +124,8 @@ public class PlayerFSM : MonoBehaviour
     private void ApplyMovement()
     {
         Vector2 delta = _velocity * Time.deltaTime;
-        delta = ResolveHorizontal(delta);
-        delta = ResolveVertical(delta);
+        delta = ResolveHorizontal(delta); // 좌우 충돌 보정
+        delta = ResolveVertical(delta); // 상하 충돌 보정
         transform.position += (Vector3)delta;
     }
 
@@ -224,16 +224,19 @@ public class PlayerFSM : MonoBehaviour
         _playerData.isJumpHeld = true;
     }
     private void HandleJumpReleased() => _playerData.isJumpHeld = false;
-    private void HandleSneak() => _playerData.sneakToggled = true;
-    private void HandleSneakReleased() => _playerData.sneakToggled = false;
-    
+    private void HandleSneak() => _playerData.isSneakHeld = true;
+    private void HandleSneakReleased() => _playerData.isSneakHeld = false;
 
     private void OnDestroy()
     {
         if (SingletonManagers.Input == null) return;
 
         SingletonManagers.Input.OnMove -= HandleMoveInput;
+
         SingletonManagers.Input.OnJumpPressed -= HandleJump;
         SingletonManagers.Input.OnJumpReleased -= HandleJumpReleased;
+
+        SingletonManagers.Input.OnSneakPressed -= HandleSneak;
+        SingletonManagers.Input.OnSneakReleased -= HandleSneakReleased;
     }
 }

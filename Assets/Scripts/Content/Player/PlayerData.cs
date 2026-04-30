@@ -26,7 +26,7 @@ public class PlayerData
     public Vector2 moveInput; // 입력받은 이동방향
     public bool jumpRequested; // 점프 요구
     public bool isJumpHeld;   // 점프 키 홀드 중
-    public bool sneakToggled; // 엎드린 상태인지
+    public bool isSneakHeld; // 엎드리기 키 홀드 중
     public bool isGrounded; // 바닥에 있는지
     public bool isPushing; // 물체를 미는 중인지
     public bool isNearLadder; // 근처에 사다리가 있는지
