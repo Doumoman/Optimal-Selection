@@ -51,8 +51,8 @@ public class AirborneState : PlayerBaseState
             return;
         }
 
-        // 사다리 감지 + 위 방향키 입력 → LadderState
-        if (data.isNearLadder && data.MoveVerticalInput.y > 0.001f)
+        // 사다리 감지 + 위 방향키 입력 → LadderState (점프 중에는 재진입 금지)
+        if (data.isNearLadder && data.MoveVerticalInput.y > 0.001f && !isJumping)
         {
             fsm.TransitionTo(fsm.LadderState);
             return;

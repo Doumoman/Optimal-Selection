@@ -30,7 +30,12 @@ public class PlayerData
     public bool isSneakHeld; // 엎드리기 키 홀드 중
     public bool isGrounded; // 바닥에 있는지
     public bool isPushing; // 물체를 미는 중인지
-    public bool isNearLadder; // 근처에 사다리가 있는지
+    public bool isNearLadder; // 사다리 감지
     public bool isHolding; // 물체를 들고 있는지
     public bool isDead; // 플레이어 사망 여부
+
+    // ㅡㅡ 런타임 콜라이더 ㅡㅡ
+    public Collider2D nearLadderCollider; // 감지된 Ladder 콜라이더
+    public Collider2D nearHangerCollider; // 감지된 Hanger 콜라이더
+    public Collider2D nearPushableCollider; // 감지된 Pushable 콜라이더
 }

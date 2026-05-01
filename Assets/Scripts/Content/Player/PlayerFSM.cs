@@ -70,7 +70,6 @@ public class PlayerFSM : MonoBehaviour
         TransitionTo(MoveState); // 초기 상태
     }
 
-
     private void Update()
     {
         // 사망 일괄 처리
@@ -80,9 +79,10 @@ public class PlayerFSM : MonoBehaviour
             return;
         }
 
-        // 지면 감지 (전이 판정 전에 갱신)
+        // ㅡㅡㅡ Layer 감지 함수들 ㅡㅡㅡ
         CheckGround();
         CheckLadder();
+        ApplyLayerPriority();
 
         // lastDir 갱신 및 스프라이트 좌우 플리핑
         if (_playerData.moveHorizontalInput != Vector2.zero)
@@ -211,7 +211,14 @@ public class PlayerFSM : MonoBehaviour
     private void CheckLadder()
     {
         Vector2 center = (Vector2)transform.position + Bc.offset;
-        _playerData.isNearLadder = Physics2D.OverlapPoint(center, _playerData.ladderLayer);
+        _playerData.nearLadderCollider = Physics2D.OverlapPoint(center, _playerData.ladderLayer);
+        _playerData.isNearLadder = _playerData.nearLadderCollider != null;
+    }
+
+    // ── 레이어 우선순위 적용 ──
+    private void ApplyLayerPriority()
+    {
+        // 현재 추가 우선순위 규칙 없음
     }
 
     // ── 입력 핸들러 ──
