@@ -25,7 +25,7 @@ public class PlayerFSM : MonoBehaviour
     private Vector2 _velocity; // 속도
     public Vector2 lastDir; // 마지막 방향
 
-    private readonly float SkinWidth = 0.02f;
+    private readonly float SkinWidth = 0.02f; // 콜라이더 겉을 감싸는 얇은 막, 충돌 버그 방지
     private readonly int RayCount = 3;
 
     private void Awake()
@@ -82,7 +82,8 @@ public class PlayerFSM : MonoBehaviour
         // ㅡㅡㅡ Layer 감지 함수들 ㅡㅡㅡ
         CheckGround();
         CheckLadder();
-        ApplyLayerPriority();
+        CheckPushable();
+        ApplyLayerPriority(); // 우선 순위 결정
 
         // lastDir 갱신 및 스프라이트 좌우 플리핑
         if (_playerData.moveHorizontalInput != Vector2.zero)
@@ -94,7 +95,7 @@ public class PlayerFSM : MonoBehaviour
         }
 
         _currentState?.Update();
-        ApplyMovement();
+        ApplyMovement(); // 실제 움직임 적용
     }
 
     private void LateUpdate()
@@ -119,6 +120,7 @@ public class PlayerFSM : MonoBehaviour
         else return 0;
     }
 
+    // ㅡㅡ 이동 관련 헬퍼 함수들 ㅡㅡ
     public void SetVelocity(float x, float y) => _velocity = new Vector2(x, y);
     public void SetVelocityX(float x) => _velocity.x = x;
     public void SetVelocityY(float y) => _velocity.y = y;
@@ -133,6 +135,8 @@ public class PlayerFSM : MonoBehaviour
         transform.position += (Vector3)delta;
     }
 
+    // 이번 프레임에 이동할 거리를 미리 계산하고,
+    // 그 방향에 벽이 있는지 확인하고 벽에 달라붙을 만큼만 이동거리를 줄여서 반환하는 함수
     private Vector2 ResolveHorizontal(Vector2 delta)
     {
         if (Mathf.Abs(delta.x) < 0.0001f) return delta;
@@ -148,7 +152,7 @@ public class PlayerFSM : MonoBehaviour
             Vector2 origin = center + Vector2.up * Mathf.Lerp(-halfH, halfH, t);
             origin.x += dir * (Bc.size.x * 0.5f - SkinWidth);
 
-            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right * dir, rayLength, _playerData.groundLayer);
+            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right * dir, rayLength, _playerData.solidLayer);
             if (hit.collider != null)
             {
                 delta.x = (hit.distance - SkinWidth) * dir;
@@ -174,7 +178,7 @@ public class PlayerFSM : MonoBehaviour
             Vector2 origin = center + Vector2.right * Mathf.Lerp(-halfW, halfW, t);
             origin.y += dir * (Bc.size.y * 0.5f - SkinWidth);
 
-            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.up * dir, rayLength, _playerData.groundLayer);
+            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.up * dir, rayLength, _playerData.solidLayer);
             if (hit.collider != null)
             {
                 delta.y = (hit.distance - SkinWidth) * dir;
@@ -185,7 +189,7 @@ public class PlayerFSM : MonoBehaviour
         return delta;
     }
 
-    // ── 지면 감지 ──
+    // ── Layer 감지 함수들 ──
     private void CheckGround()
     {
         Vector2 center = (Vector2)transform.position + Bc.offset;
@@ -197,7 +201,7 @@ public class PlayerFSM : MonoBehaviour
             Vector2 origin = center + Vector2.right * Mathf.Lerp(-halfW, halfW, t);
             origin.y -= Bc.size.y * 0.5f - SkinWidth;
 
-            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, _playerData.groundCheckDistance + SkinWidth, _playerData.groundLayer);
+            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, _playerData.groundCheckDistance + SkinWidth, _playerData.solidLayer);
             if (hit.collider != null)
             {
                 _playerData.isGrounded = true;
@@ -207,7 +211,6 @@ public class PlayerFSM : MonoBehaviour
         _playerData.isGrounded = false;
     }
 
-    // ── 사다리 감지 ──
     private void CheckLadder()
     {
         Vector2 center = (Vector2)transform.position + Bc.offset;
@@ -215,7 +218,39 @@ public class PlayerFSM : MonoBehaviour
         _playerData.isNearLadder = _playerData.nearLadderCollider != null;
     }
 
-    // ── 레이어 우선순위 적용 ──
+    private void CheckPushable()
+    {
+        if (Mathf.Abs(_playerData.moveHorizontalInput.x) < 0.001f || !_playerData.isGrounded)
+        {
+            _playerData.isPushing = false;
+            _playerData.nearPushableCollider = null;
+            return;
+        }
+
+        float dir = Mathf.Sign(_playerData.moveHorizontalInput.x);
+        float rayLength = SkinWidth + 0.05f;
+        float halfH = Bc.size.y * 0.5f - SkinWidth;
+        Vector2 center = (Vector2)transform.position + Bc.offset;
+
+        for (int i = 0; i < RayCount; i++)
+        {
+            float t = (RayCount == 1) ? 0.5f : (float)i / (RayCount - 1);
+            Vector2 origin = center + Vector2.up * Mathf.Lerp(-halfH, halfH, t);
+            origin.x += dir * (Bc.size.x * 0.5f - SkinWidth);
+
+            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right * dir, rayLength, _playerData.pushableLayer);
+            if (hit.collider != null)
+            {
+                _playerData.nearPushableCollider = hit.collider;
+                _playerData.isPushing = true;
+                return;
+            }
+        }
+
+        _playerData.nearPushableCollider = null;
+        _playerData.isPushing = false;
+    }
+
     private void ApplyLayerPriority()
     {
         // 현재 추가 우선순위 규칙 없음
