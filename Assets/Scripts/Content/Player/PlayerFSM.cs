@@ -20,6 +20,7 @@ public class PlayerFSM : MonoBehaviour
     public PlayerBaseState SneakMoveState { get; private set; }
     public PlayerBaseState PushState { get; private set; }
     public PlayerBaseState KilledState { get; private set; }
+    public PlayerBaseState HangState { get; private set; }
 
     [Header("Physics")]
     private Vector2 _velocity; // 속도
@@ -46,6 +47,7 @@ public class PlayerFSM : MonoBehaviour
         SneakMoveState = new SneakMoveState(this);
         PushState = new PushState(this);
         KilledState = new KilledState(this);
+        HangState = new HangState(this);
 
         // ㅡㅡㅡㅡ InputManager에서 이벤트 구독 ㅡㅡㅡㅡ
         SingletonManagers.Input.OnMove -= HandleMoveInput;
@@ -82,11 +84,12 @@ public class PlayerFSM : MonoBehaviour
         // ㅡㅡㅡ Layer 감지 함수들 ㅡㅡㅡ
         CheckGround();
         CheckLadder();
+        CheckHanger();
         CheckPushable();
         ApplyLayerPriority(); // 우선 순위 결정
 
-        // lastDir 갱신 및 스프라이트 좌우 플리핑
-        if (_playerData.moveHorizontalInput != Vector2.zero)
+        // lastDir 갱신 및 스프라이트 좌우 플리핑 (HangState, LadderState 중에는 방향 고정)
+        if (_playerData.moveHorizontalInput != Vector2.zero && _currentState != HangState && _currentState != LadderState)
         {
             lastDir = _playerData.moveHorizontalInput;
             Vector2 scale = transform.localScale;
@@ -216,6 +219,31 @@ public class PlayerFSM : MonoBehaviour
         Vector2 center = (Vector2)transform.position + Bc.offset;
         _playerData.nearLadderCollider = Physics2D.OverlapPoint(center, _playerData.ladderLayer);
         _playerData.isNearLadder = _playerData.nearLadderCollider != null;
+    }
+
+    private void CheckHanger()
+    {
+        float dir = lastDir.x;
+        float rayLength = SkinWidth + 0.05f;
+        float halfH = Bc.size.y * 0.5f - SkinWidth;
+        Vector2 center = (Vector2)transform.position + Bc.offset;
+
+        for (int i = 0; i < RayCount; i++)
+        {
+            float t = (RayCount == 1) ? 0.5f : (float)i / (RayCount - 1);
+            Vector2 origin = center + Vector2.up * Mathf.Lerp(-halfH, halfH, t);
+            origin.x += dir * (Bc.size.x * 0.5f - SkinWidth);
+
+            RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right * dir, rayLength, _playerData.hangerLayer);
+            if (hit.collider != null)
+            {
+                _playerData.nearHangerCollider = hit.collider;
+                _playerData.isNearHanger = true;
+                return;
+            }
+        }
+        _playerData.nearHangerCollider = null;
+        _playerData.isNearHanger = false;
     }
 
     private void CheckPushable()

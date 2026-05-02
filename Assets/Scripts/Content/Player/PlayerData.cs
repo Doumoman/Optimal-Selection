@@ -28,11 +28,13 @@ public class PlayerData
     public Vector2 moveHorizontalInput; // 입력받은 좌우 이동 방향
     public Vector2 MoveVerticalInput; // 입력받은 상하 이동 방향
     public bool jumpRequested; // 점프 요구
-    public bool isJumpHeld;   // 점프 키 홀드 중
+    public bool isJumpHeld; // 점프 키 홀드 중
+    public bool isFalling; // 낙하 중인지
     public bool isSneakHeld; // 엎드리기 키 홀드 중
     public bool isGrounded; // 바닥에 있는지
     public bool isPushing; // 물체를 미는 중인지
     public bool isNearLadder; // 사다리 감지
+    public bool isNearHanger; // 행거 감지
     public bool isHolding; // 물체를 들고 있는지
     public bool isDead; // 플레이어 사망 여부
                         

@@ -10,6 +10,7 @@ public class AirborneState : PlayerBaseState
     public override void Enter()
     {
         jumpHoldTime = 0f;
+        data.isFalling = false;
 
         if (data.jumpRequested)
         {
@@ -38,6 +39,9 @@ public class AirborneState : PlayerBaseState
             effectiveGravity = data.gravity;
         }
 
+        if (vel.y < 0f)
+            data.isFalling = true;
+
         vel.y += effectiveGravity * Time.deltaTime;
         vel.y = Mathf.Max(vel.y, data.maxFallSpeed);
         vel.x = data.moveHorizontalInput.x * data.moveSpeed;
@@ -47,6 +51,7 @@ public class AirborneState : PlayerBaseState
         // 착지 → MoveState
         if (data.isGrounded && vel.y <= 0f)
         {
+            data.isFalling = false;
             fsm.TransitionTo(fsm.MoveState);
             return;
         }
@@ -56,6 +61,17 @@ public class AirborneState : PlayerBaseState
         {
             fsm.TransitionTo(fsm.LadderState);
             return;
+        }
+
+        // Hangable 감지 → 낙하 중 + 머리가 Hangable 중심을 넘으면 매달리기
+        if (data.isFalling && data.isNearHanger)
+        {
+            float playerHeadY = fsm.transform.position.y + fsm.Bc.size.y * 0.5f;
+            if (playerHeadY > data.nearHangerCollider.bounds.center.y)
+            {
+                fsm.TransitionTo(fsm.HangState);
+                return;
+            }
         }
 
         // ── 애니메이션 ──

@@ -44,6 +44,7 @@ public abstract class PlayerBaseState
         }
         else if (state == fsm.AirborneState) { clip = AnimClips.Airborne; }
         else if (state == fsm.LadderState) { clip = AnimClips.Ladder; }
+        else if (state == fsm.HangState) { clip = AnimClips.Hanging; }
         else if (state == fsm.KilledState) { clip = AnimClips.Death; }
 
         if (!string.IsNullOrEmpty(clip))
