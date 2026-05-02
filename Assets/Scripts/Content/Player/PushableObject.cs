@@ -23,6 +23,7 @@ public class PushableObject : MonoBehaviour, IPushable
 
         _rb.gravityScale = 0f;
         _bc = GetComponent<BoxCollider2D>();
+        _bc.size *= 0.9f; // 콜라이더 크기를 원본 크기보다 조금 작게
     }
 
     private void Update()
@@ -34,10 +35,38 @@ public class PushableObject : MonoBehaviour, IPushable
 
         Vector2 delta = new Vector2(_velocityX, _velocityY) * Time.deltaTime;
         delta = ResolveVertical(delta);
-        delta = ResolveHorizontal(delta);
+        delta.x = ResolveHorizontalSubstepped(delta.x);
         transform.position += (Vector3)delta;
 
         _velocityX = 0f;
+    }
+
+    // 한 프레임에 감지 존(2 * groundCheckInset)을 건너뛰지 않도록
+    // 낙하 지점을 무시하고 지나치는 현상 방지
+    private float ResolveHorizontalSubstepped(float totalDeltaX)
+    {
+        if (Mathf.Abs(totalDeltaX) < 0.0001f) return totalDeltaX;
+
+        float maxStep = groundCheckInset * 2f * 0.9f; // 감지 존보다 약간 작게
+        float remaining = totalDeltaX;
+        float accumulated = 0f;
+        Vector3 origin = transform.position;
+
+        while (Mathf.Abs(remaining) > 0.0001f) // 남은 이동거리를 다 소진할 때까지
+        {
+            float step = Mathf.Sign(remaining) * Mathf.Min(Mathf.Abs(remaining), maxStep);
+            float resolved = ResolveHorizontal(new Vector2(step, 0f)).x;
+
+            transform.position += new Vector3(resolved, 0f, 0f); // 일단 가상으로 옮겨본다
+            accumulated += resolved; // 실제 이동한 거리를 누적
+            remaining -= step; // 남은 거리를 깎음
+
+            if (Mathf.Abs(resolved) < Mathf.Abs(step) - 0.001f) break; // 벽에 막힘
+            if (!CheckGround()) break; // 발판 없음 → 다음 프레임에 중력 적용
+        }
+
+        transform.position = origin; // 가상으로 옮겼던 위치를 복구시킴
+        return accumulated;
     }
 
     public void SetHorizontalVelocity(float vx) => _velocityX = vx;

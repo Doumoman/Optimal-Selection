@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PushState : PlayerBaseState
 {
@@ -15,6 +15,13 @@ public class PushState : PlayerBaseState
     {
         // 땅에서 벗어나면 → AirborneState
         if (!data.isGrounded)
+        {
+            fsm.TransitionTo(fsm.AirborneState);
+            return;
+        }
+
+        // 점프 이탈 (공중으로 나감) → AirborneState
+        if (data.jumpRequested)
         {
             fsm.TransitionTo(fsm.AirborneState);
             return;
