@@ -4,16 +4,16 @@
 public class PlayerData
 {
     [Header("이동 속도")]
-    public float moveSpeed = 5f;
+    public float moveSpeed = 7f;
     public float sneakSpeed = 2.5f;
     public float ladderSpeed = 4f;
     public float pushSpeed = 2f;
 
     [Header("점프 / 중력")]
-    public float jumpSpeed = 12f; // 점프 속도
+    public float jumpSpeed = 10f; // 점프 속도
     public float jumpMaxHoldTime = 0.3f; // 점프 키 최대 홀드 시간
-    public float jumpHoldGravityScale = 0.3f; // 점프 시 가해지는 중력
-    public float gravity = -25f; // 실제 중력
+    public float jumpHoldGravityScale = 0.5f; // 점프 시 가해지는 중력
+    public float gravity = -70f; // 실제 중력
     public float maxFallSpeed = -20f; // 낙하 최고 스피드
     public float groundCheckDistance = 0.05f; // 커질수록 ground 감지하는 ray가 길어짐
 
